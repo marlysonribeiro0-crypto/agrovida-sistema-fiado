@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agrovida PRO - Final</title>
+    <title>Agrovida PRO - v22 Sequencial</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -36,11 +36,8 @@
 
         .menu-item { padding: 15px 25px; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #bdc3c7; transition: 0.2s; text-decoration: none; font-size: 1rem; border-left: 4px solid transparent; position: relative; }
         .menu-item:hover { background: rgba(255,255,255,0.05); color: var(--white); }
-        
-        /* CORREÇÃO DO BOTÃO ATIVO */
         .menu-item.active { background: rgba(255,255,255,0.1); color: var(--white); border-left-color: var(--accent); }
         .menu-item.active i { color: var(--accent); } 
-        
         .notify-badge { background-color: var(--danger); color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 10px; position: absolute; right: 20px; font-weight: bold; display: none; animation: pulse-red 2s infinite; }
         @keyframes pulse-red { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
@@ -77,7 +74,7 @@
         td { padding: 15px 20px; border-bottom: 1px solid #eee; font-size: 0.95rem; }
         .action-btn { background: var(--secondary); color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 0.9rem; }
         
-        /* SEARCH BAR MODERNA */
+        /* SEARCH BAR */
         .search-container { display: flex; align-items: center; background: #fff; border: 1px solid #ddd; border-radius: 50px; padding: 5px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.3s; margin-bottom: 20px; }
         .search-container:focus-within { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.1); }
         .search-container i { color: #aaa; font-size: 1.2rem; }
@@ -101,7 +98,7 @@
         .status-debt { background: #fadbd8; color: #c0392b; }
         .status-ok { background: #d5f5e3; color: #27ae60; }
 
-        /* MODALS & Z-INDEX */
+        /* MODALS */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; padding: 10px; }
         .modal-content { background: white; padding: 25px; border-radius: 15px; width: 100%; max-width: 500px; max-height: 85vh; overflow-y: auto; }
         .history-item { border: 1px solid #eee; padding: 15px; margin-bottom: 10px; border-radius: 8px; background: #fafafa; }
@@ -116,6 +113,18 @@
 
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; pointer-events: none; }
         .toast { background: var(--secondary); color: white; padding: 15px 25px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid var(--primary); pointer-events: auto; }
+
+        /* LABEL NUMERO DA NOTA */
+        .note-number-badge {
+            background-color: var(--secondary);
+            color: var(--accent);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-right: 10px;
+        }
 
         /* IMPRESSÃO */
         #area-impressao { display: none; }
@@ -173,7 +182,7 @@
             <a id="menu-clientes" class="menu-item" onclick="navTo('clientes')"><i class="fas fa-users"></i> Clientes</a>
             <a id="menu-cadastro" class="menu-item" onclick="novoCadastro()"><i class="fas fa-user-plus"></i> Novo Cadastro</a>
         </nav>
-        <div style="margin-top: auto; padding: 20px; text-align: center; font-size: 0.75rem; color: #7f8c8d;">Agrovida v21.0</div>
+        <div style="margin-top: auto; padding: 20px; text-align: center; font-size: 0.75rem; color: #7f8c8d;">Agrovida v22.0</div>
     </aside>
 
     <main class="main-content">
@@ -201,7 +210,7 @@
                     <input type="text" class="search-input" id="search-client" placeholder="Buscar cliente..." onkeyup="renderClients()">
                 </div>
                 <table style="width: 100%; background: white;">
-                    <thead><tr><th>Nome</th><th>Saldo</th><th>Status</th><th>Ação</th></tr></thead>
+                    <thead><tr><th>Nota</th><th>Nome</th><th>Saldo</th><th>Status</th><th>Ação</th></tr></thead>
                     <tbody id="clientes-list"></tbody>
                 </table>
             </div>
@@ -224,8 +233,14 @@
 
         <section id="view-detalhe" class="view-section">
             <div class="page-header">
-                <div class="page-title"><button class="btn-back" onclick="navTo('clientes')"><i class="fas fa-arrow-left"></i></button> &nbsp; <span id="detalhe-nome">Nome</span></div>
-                <div style="text-align: right"><small>SALDO</small><div id="detalhe-saldo" style="font-size: 1.5rem; font-weight: 800; color:var(--danger)">R$ 0,00</div></div>
+                <div class="page-title"><button class="btn-back" onclick="navTo('clientes')"><i class="fas fa-arrow-left"></i></button> &nbsp; 
+                    <span id="detalhe-nome">Nome</span>
+                </div>
+                <div style="text-align: right">
+                    <div id="note-number-display" class="note-number-badge" style="display:none">NOTA Nº --</div>
+                    <small>SALDO</small>
+                    <div id="detalhe-saldo" style="font-size: 1.5rem; font-weight: 800; color:var(--danger)">R$ 0,00</div>
+                </div>
             </div>
             
             <div class="grid-detalhe">
@@ -269,7 +284,7 @@
     <div id="area-impressao"></div>
 
     <script>
-        // --- CHAVES FIREBASE ---
+        // --- CHAVES ---
         const firebaseConfig = {
           apiKey: "AIzaSyAPQST9oBIqYOYNksPNaARpyW8K-nXiRtE",
           authDomain: "agrovida-system.firebaseapp.com",
@@ -279,10 +294,8 @@
           appId: "1:808503446468:web:989d4e3fd8716c0fe3f291"
         };
 
-        // --- SISTEMA ---
         let db, localClients = [], currentClient = null, tipoImpressaoAtual = 'extrato', dadosImpressaoTemp = null;
 
-        // Login Keydown
         document.getElementById('login-pin').addEventListener('keydown', function(e) { if(e.key==='Enter') checkLogin(); });
 
         function checkLogin() {
@@ -296,7 +309,6 @@
             if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
             db = firebase.firestore();
             document.getElementById('loading-screen').style.display = 'flex';
-            
             db.collection("clients").onSnapshot(snap => {
                 localClients = [];
                 snap.forEach(doc => { let d = doc.data(); d.id = doc.id; localClients.push(d); });
@@ -305,27 +317,17 @@
             });
         }
 
-        // --- NAVEGAÇÃO ---
-        function toggleSidebar() {
-            document.querySelector('.sidebar').classList.toggle('active');
-            document.querySelector('.sidebar-overlay').classList.toggle('active');
-        }
+        function toggleSidebar() { document.querySelector('.sidebar').classList.toggle('active'); document.querySelector('.sidebar-overlay').classList.toggle('active'); }
 
         function navTo(screenId) {
-            // Remove active de todos
             document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
-            
-            // Ativa o ID correto (Correção do botão amarelo)
             let menuId = 'menu-' + screenId;
-            if(screenId === 'detalhe') menuId = 'menu-clientes'; // Detalhes mantêm Clientes ativo
+            if(screenId === 'detalhe') menuId = 'menu-clientes';
             const activeMenu = document.getElementById(menuId);
             if(activeMenu) activeMenu.classList.add('active');
 
-            // Troca de tela
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.getElementById('view-'+screenId).classList.add('active');
-            
-            // Fecha mobile
             document.querySelector('.sidebar').classList.remove('active');
             document.querySelector('.sidebar-overlay').classList.remove('active');
 
@@ -350,23 +352,58 @@
             }
         }
 
-        // --- CRUD ---
+        // --- SISTEMA DE NUMERAÇÃO ---
+        async function getNextNoteNumber() {
+            const configRef = db.collection('config').doc('metadata');
+            try {
+                const doc = await configRef.get();
+                let nextNum = 1;
+                if (doc.exists) {
+                    nextNum = (doc.data().lastNoteNumber || 0) + 1;
+                }
+                await configRef.set({ lastNoteNumber: nextNum }, { merge: true });
+                return nextNum;
+            } catch (e) {
+                console.error("Erro numeracao", e);
+                return Date.now().toString().slice(-4); // Fallback
+            }
+        }
+
+        async function addItem() {
+            const desc = document.getElementById('add-desc').value;
+            const qtd = parseFloat(document.getElementById('add-qtd').value)||1;
+            const val = parseFloat(document.getElementById('add-val').value);
+            const dsc = parseFloat(document.getElementById('add-desc-val').value)||0;
+            if(!desc || !val) return alert("Preencha dados");
+            
+            const tot = (qtd*val)-dsc;
+            let noteNum = currentClient.activeNoteNumber;
+
+            // Se for o inicio de um ciclo (sem nota ativa), gera numero
+            if (!noteNum && (!currentClient.transactions || currentClient.transactions.length === 0)) {
+                noteNum = await getNextNoteNumber();
+            }
+
+            const item = { id: Date.now(), date: new Date().toISOString(), desc, qtd, unit: val, discount: dsc, total: tot, type: 'debt' };
+            let trs = currentClient.transactions || []; trs.push(item);
+            
+            let updateData = { transactions: trs };
+            if (noteNum) updateData.activeNoteNumber = noteNum;
+
+            db.collection("clients").doc(currentClient.id).update(updateData).then(() => showToast("Lançado!"));
+            
+            document.getElementById('add-desc').value=''; document.getElementById('add-val').value=''; document.getElementById('add-desc-val').value=''; document.getElementById('add-qtd').value='1'; document.getElementById('add-desc').focus();
+        }
+
         function novoCadastro() {
-            navTo('cadastro');
-            document.getElementById('form-title').innerText = "Novo Cliente";
-            document.getElementById('edit-id').value = "";
-            document.querySelectorAll('#view-cadastro input').forEach(i=>i.value='');
-            setTimeout(() => document.getElementById('cad-nome').focus(), 300);
+            navTo('cadastro'); document.getElementById('form-title').innerText = "Novo Cliente"; document.getElementById('edit-id').value = "";
+            document.querySelectorAll('#view-cadastro input').forEach(i=>i.value=''); setTimeout(() => document.getElementById('cad-nome').focus(), 300);
         }
 
         function prepareEdit() {
-            navTo('cadastro');
-            document.getElementById('form-title').innerText = "Editar Cliente";
-            document.getElementById('edit-id').value = currentClient.id;
-            document.getElementById('cad-nome').value = currentClient.nome;
-            document.getElementById('cad-cpf').value = currentClient.cpf||'';
-            document.getElementById('cad-tel').value = currentClient.tel||'';
-            document.getElementById('cad-cidade').value = currentClient.cidade||'';
+            navTo('cadastro'); document.getElementById('form-title').innerText = "Editar Cliente"; document.getElementById('edit-id').value = currentClient.id;
+            document.getElementById('cad-nome').value = currentClient.nome; document.getElementById('cad-cpf').value = currentClient.cpf||'';
+            document.getElementById('cad-tel').value = currentClient.tel||''; document.getElementById('cad-cidade').value = currentClient.cidade||'';
             document.getElementById('cad-end').value = currentClient.endereco||'';
         }
 
@@ -374,70 +411,51 @@
             const id = document.getElementById('edit-id').value;
             const nome = document.getElementById('cad-nome').value;
             if(!nome) return alert("Nome obrigatório");
-            
             const data = { nome, cpf: document.getElementById('cad-cpf').value, tel: document.getElementById('cad-tel').value, cidade: document.getElementById('cad-cidade').value, endereco: document.getElementById('cad-end').value };
-
             if(id) { db.collection("clients").doc(id).update(data).then(()=>{ showToast("Editado!"); navTo('detalhe'); }); } 
-            else { 
-                data.transactions = []; data.history = []; data.createdAt = new Date().toISOString();
-                db.collection("clients").add(data).then(()=>{ showToast("Criado!"); navTo('clientes'); }); 
-            }
+            else { data.transactions = []; data.history = []; data.createdAt = new Date().toISOString(); db.collection("clients").add(data).then(()=>{ showToast("Criado!"); navTo('clientes'); }); }
         }
 
-        function deleteClient() {
-            if(confirm("Tem certeza que deseja EXCLUIR?")) {
-                db.collection("clients").doc(currentClient.id).delete().then(()=>{ showToast("Excluído!"); navTo('clientes'); });
-            }
-        }
+        function deleteClient() { if(confirm("Tem certeza?")) db.collection("clients").doc(currentClient.id).delete().then(()=>{ showToast("Excluído!"); navTo('clientes'); }); }
 
         function renderClients() {
             const term = document.getElementById('search-client').value.toLowerCase();
             const tbody = document.getElementById('clientes-list'); tbody.innerHTML='';
-            
-            localClients.sort((a,b) => {
-                const balA = (a.transactions||[]).reduce((x,y)=>x+y.total,0);
-                const balB = (b.transactions||[]).reduce((x,y)=>x+y.total,0);
-                return balB - balA;
-            });
-
+            localClients.sort((a,b) => { const balA = (a.transactions||[]).reduce((x,y)=>x+y.total,0); const balB = (b.transactions||[]).reduce((x,y)=>x+y.total,0); return balB - balA; });
             localClients.forEach(c => {
                 if(c.nome.toLowerCase().includes(term) || (c.cpf && c.cpf.includes(term))) {
                     const bal = (c.transactions||[]).reduce((a,b)=>a+b.total,0);
                     let st = '<span class="status-badge status-ok">OK</span>';
                     if(bal > 0.05) st = '<span class="status-badge status-debt">Devendo</span>';
-                    tbody.innerHTML += `<tr onclick="openClient('${c.id}')" style="cursor:pointer">
-                        <td><b>${c.nome}</b><br><small style="color:#999">${c.cidade||''}</small></td>
-                        <td style="font-weight:bold; color:${bal>0.05?'var(--danger)':'var(--primary)'}">${bal.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}</td>
-                        <td>${st}</td>
-                        <td><button class="action-btn"><i class="fas fa-chevron-right"></i> Abrir</button></td>
-                    </tr>`;
+                    let notaDisplay = c.activeNoteNumber ? `<b>#${c.activeNoteNumber}</b>` : '-';
+                    tbody.innerHTML += `<tr onclick="openClient('${c.id}')" style="cursor:pointer"><td>${notaDisplay}</td><td><b>${c.nome}</b><br><small style="color:#999">${c.cidade||''}</small></td><td style="font-weight:bold; color:${bal>0.05?'var(--danger)':'var(--primary)'}">${bal.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}</td><td>${st}</td><td><button class="action-btn"><i class="fas fa-chevron-right"></i></button></td></tr>`;
                 }
             });
         }
 
-        function openClient(id) {
-            currentClient = localClients.find(c=>c.id===id);
-            updateDetailView();
-            navTo('detalhe');
-        }
+        function openClient(id) { currentClient = localClients.find(c=>c.id===id); updateDetailView(); navTo('detalhe'); }
 
         function updateDetailView() {
             document.getElementById('detalhe-nome').innerText = currentClient.nome;
             document.getElementById('info-cpf').innerText = "CPF: " + (currentClient.cpf||'-');
             document.getElementById('info-tel').innerText = "Tel: " + (currentClient.tel||'-');
             
+            // NUMERO DA NOTA
+            const noteBadge = document.getElementById('note-number-display');
+            if (currentClient.activeNoteNumber) {
+                noteBadge.style.display = 'inline-block';
+                noteBadge.innerText = "NOTA Nº " + currentClient.activeNoteNumber;
+            } else {
+                noteBadge.style.display = 'none';
+            }
+
             const tbody = document.getElementById('detalhe-itens'); tbody.innerHTML = '';
             let total = 0; const trs = currentClient.transactions || [];
             
             trs.forEach(t => {
                 total += t.total;
                 const isPay = t.type === 'credit';
-                tbody.innerHTML += `<tr>
-                    <td><div style="font-weight:600; color:${isPay?'var(--primary)':'#333'}">${t.desc}</div>
-                    <small style="color:#999">${t.qtd}x ${Math.abs(t.unit).toFixed(2)} ${t.discount>0?'(-'+t.discount+')':''} • ${new Date(t.date).toLocaleDateString()}</small></td>
-                    <td class="text-right" style="color:${isPay?'var(--primary)':'#333'}; font-weight:bold">${isPay?'-':''} ${Math.abs(t.total).toFixed(2)}</td>
-                    <td><button style="color:#ccc;border:none;background:none" onclick="deleteItem(${t.id})">&times;</button></td>
-                </tr>`;
+                tbody.innerHTML += `<tr><td><div style="font-weight:600; color:${isPay?'var(--primary)':'#333'}">${t.desc}</div><small style="color:#999">${t.qtd}x ${Math.abs(t.unit).toFixed(2)} ${t.discount>0?'(-'+t.discount+')':''} • ${new Date(t.date).toLocaleDateString()}</small></td><td class="text-right" style="color:${isPay?'var(--primary)':'#333'}; font-weight:bold">${isPay?'-':''} ${Math.abs(t.total).toFixed(2)}</td><td><button style="color:#ccc;border:none;background:none" onclick="deleteItem(${t.id})">&times;</button></td></tr>`;
             });
 
             document.getElementById('detalhe-saldo').innerText = total.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
@@ -453,43 +471,31 @@
             }
         }
 
-        // --- TRANSAÇÕES ---
-        function updateDB(data) { db.collection("clients").doc(currentClient.id).update(data).then(() => showToast("Salvo!")); }
-
-        function addItem() {
-            const desc = document.getElementById('add-desc').value;
-            const qtd = parseFloat(document.getElementById('add-qtd').value)||1;
-            const val = parseFloat(document.getElementById('add-val').value);
-            const dsc = parseFloat(document.getElementById('add-desc-val').value)||0;
-            if(!desc || !val) return alert("Preencha dados");
-            const tot = (qtd*val)-dsc;
-            const item = { id: Date.now(), date: new Date().toISOString(), desc, qtd, unit: val, discount: dsc, total: tot, type: 'debt' };
-            let trs = currentClient.transactions || []; trs.push(item);
-            updateDB({ transactions: trs });
-            document.getElementById('add-desc').value=''; document.getElementById('add-val').value=''; document.getElementById('add-desc-val').value=''; document.getElementById('add-qtd').value='1'; document.getElementById('add-desc').focus();
-        }
-
         function addPayment() {
             const val = parseFloat(document.getElementById('pay-val').value);
             if(!val) return;
             const item = { id: Date.now(), date: new Date().toISOString(), desc: "PAGAMENTO", qtd: 1, unit: val, discount: 0, total: -val, type: 'credit' };
             let trs = currentClient.transactions || []; trs.push(item);
-            updateDB({ transactions: trs });
+            db.collection("clients").doc(currentClient.id).update({ transactions: trs });
             document.getElementById('pay-val').value='';
         }
 
-        function deleteItem(id) { if(confirm("Apagar?")) { let trs = currentClient.transactions.filter(t=>t.id!==id); updateDB({ transactions: trs }); } }
+        function deleteItem(id) { if(confirm("Apagar?")) { let trs = currentClient.transactions.filter(t=>t.id!==id); db.collection("clients").doc(currentClient.id).update({ transactions: trs }); } }
 
         function arquivarCiclo() {
             if(confirm("Arquivar conta paga?")) {
-                const ciclo = { id: Date.now(), dataArquivamento: new Date().toISOString(), itens: [...currentClient.transactions] };
+                const ciclo = { id: Date.now(), dataArquivamento: new Date().toISOString(), noteNumber: currentClient.activeNoteNumber || '-', itens: [...currentClient.transactions] };
                 let hist = currentClient.history || []; hist.push(ciclo);
-                updateDB({ transactions: [], history: hist });
-                showToast("Arquivado!");
+                // Remove o numero da nota ativa ao arquivar
+                db.collection("clients").doc(currentClient.id).update({ transactions: [], history: hist, activeNoteNumber: firebase.firestore.FieldValue.delete() }).then(()=>showToast("Arquivado!"));
             }
         }
 
-        // --- EXTRAS ---
+        function checkOverdueClients() {
+            let count = 0; localClients.forEach(c => { if(getOverdueData(c)) count++; });
+            const b = document.getElementById('badge-notify'); if(count>0) { b.style.display='inline-block'; b.innerText=count; } else { b.style.display='none'; }
+        }
+        
         function getOverdueData(c) {
             const bal = (c.transactions||[]).reduce((a,b)=>a+b.total,0);
             if(bal <= 0.05 || !c.transactions.length) return null;
@@ -497,31 +503,23 @@
             const diff = Math.ceil((new Date() - d1)/(1000*3600*24));
             return diff > 0 ? { days: diff, amount: bal, date: d1 } : null;
         }
-        function checkOverdueClients() {
-            let count = 0; localClients.forEach(c => { if(getOverdueData(c)) count++; });
-            const b = document.getElementById('badge-notify'); if(count>0) { b.style.display='inline-block'; b.innerText=count; } else { b.style.display='none'; }
-        }
+
         function renderNotifications() {
-            const list = document.getElementById('notification-list'); list.innerHTML='';
-            let has = false;
+            const list = document.getElementById('notification-list'); list.innerHTML=''; let has = false;
             localClients.forEach(c => {
                 const over = getOverdueData(c);
-                if(over) { 
-                    has=true; 
-                    const wpp = c.tel?`https://wa.me/55${c.tel.replace(/\D/g,'')}?text=Ola ${c.nome}, debito pendente de ${over.amount.toFixed(2)}`: '#';
-                    list.innerHTML += `<div class="alert-card"><div><h4>${c.nome}</h4><small>Vencido há ${over.days} dias</small></div><div><a href="${wpp}" target="_blank" class="btn-primary" style="background:#25D366;text-decoration:none; padding:5px 10px; font-size:0.8rem; display:inline-block"><i class="fab fa-whatsapp"></i></a> <button class="btn-primary" onclick="openClient('${c.id}')" style="display:inline-block">Ver</button></div></div>`; 
-                }
+                if(over) { has=true; const wpp = c.tel?`https://wa.me/55${c.tel.replace(/\D/g,'')}?text=Ola ${c.nome}, nota ${c.activeNoteNumber||''} vencida`: '#';
+                list.innerHTML += `<div class="alert-card"><div><h4>${c.nome} (Nota #${c.activeNoteNumber||'?'})</h4><small>Vencido há ${over.days} dias</small></div><div><a href="${wpp}" target="_blank" class="btn-primary" style="background:#25D366;text-decoration:none; padding:5px 10px; font-size:0.8rem; display:inline-block"><i class="fab fa-whatsapp"></i></a> <button class="btn-primary" onclick="openClient('${c.id}')" style="display:inline-block">Ver</button></div></div>`; }
             });
             if(!has) list.innerHTML = '<p style="text-align:center;color:#999;margin-top:20px">Ninguém atrasado.</p>';
         }
 
-        // --- IMPRESSÃO & HISTÓRICO ---
         function abrirModalPrint(tipo) { tipoImpressaoAtual=tipo; document.getElementById('modal-print-overlay').style.display='flex'; }
         function abrirHistorico() {
             const list = document.getElementById('history-list'); list.innerHTML='';
             if(!currentClient.history || !currentClient.history.length) return list.innerHTML='<p style="text-align:center;color:#999">Vazio</p>';
             [...currentClient.history].reverse().forEach((h, i) => {
-                list.innerHTML += `<div class="history-item"><div class="history-header"><span>${new Date(h.dataArquivamento).toLocaleDateString()}</span><button onclick="document.getElementById('h${i}').classList.toggle('show')" style="border:none;background:none;color:var(--primary)">Ver</button></div><div id="h${i}" class="history-detail"><ul style="padding-left:15px;margin:0">${h.itens.map(x=>`<li>${x.qtd}x ${x.desc} (${x.total.toFixed(2)})</li>`).join('')}</ul><button class="btn-primary" style="width:100%;margin-top:10px;font-size:0.8rem" onclick="imprimirHistorico(${h.id})">Imprimir</button></div></div>`;
+                list.innerHTML += `<div class="history-item"><div class="history-header"><span>Data: ${new Date(h.dataArquivamento).toLocaleDateString()} - Nota #${h.noteNumber||'?'}</span><button onclick="document.getElementById('h${i}').classList.toggle('show')" style="border:none;background:none;color:var(--primary)">Ver</button></div><div id="h${i}" class="history-detail"><ul style="padding-left:15px;margin:0">${h.itens.map(x=>`<li>${x.qtd}x ${x.desc} (${x.total.toFixed(2)})</li>`).join('')}</ul><button class="btn-primary" style="width:100%;margin-top:10px;font-size:0.8rem" onclick="imprimirHistorico(${h.id})">Imprimir</button></div></div>`;
             });
             document.getElementById('modal-history-overlay').style.display='flex';
         }
@@ -530,20 +528,23 @@
         function executarImpressao(papel) {
             document.getElementById('modal-print-overlay').style.display='none';
             const area = document.getElementById('area-impressao');
-            let trs = [], title="", bal=0;
-            if(tipoImpressaoAtual==='historico') { trs=dadosImpressaoTemp.itens; title="HISTÓRICO"; }
-            else { trs=currentClient.transactions; bal=trs.reduce((a,b)=>a+b.total,0); title=tipoImpressaoAtual==='extrato'?"EXTRATO":"RECIBO"; }
+            let trs = [], title="", bal=0, notaNum = "";
             
-            // FUNÇÃO PARA GERAR VIA (IMPRESSÃO DUPLA)
+            if(tipoImpressaoAtual==='historico') { 
+                trs=dadosImpressaoTemp.itens; title="HISTÓRICO"; notaNum = dadosImpressaoTemp.noteNumber || "-";
+            } else { 
+                trs=currentClient.transactions; bal=trs.reduce((a,b)=>a+b.total,0); title=tipoImpressaoAtual==='extrato'?"EXTRATO":"RECIBO"; notaNum = currentClient.activeNoteNumber || "NOVA";
+            }
+            
             const gerarVia = (nm) => {
                 let rows = trs.map(t=>`<tr><td>${t.qtd}x ${t.desc}</td><td class="text-right">${Math.abs(t.total).toFixed(2)}</td></tr>`).join('');
                 const css = papel==='bobina'?'estilo-bobina':'estilo-a4';
-                return `<div class="via-impressao ${css}"><center><h3>AGROVIDA MAIS</h3><p>${title}</p><small>${nm}</small></center><hr><p>${currentClient.nome}</p><p>${new Date().toLocaleString()}</p><hr><table>${rows}</table><hr><h3 style="text-align:right">TOTAL: ${bal.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}</h3>${nm.includes('LOJA') ? '<br><br><div class="assinatura-box"><div class="assinatura-linha">Assinatura Cliente</div></div>' : ''}</div>`;
+                return `<div class="via-impressao ${css}"><center><h3>AGROVIDA MAIS</h3><p>${title} Nº ${notaNum}</p><small>${nm}</small></center><hr><p>${currentClient.nome}</p><p>${new Date().toLocaleString()}</p><hr><table>${rows}</table><hr><h3 style="text-align:right">TOTAL: ${bal.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}</h3>${nm.includes('LOJA') ? '<br><br><div class="assinatura-box"><div class="assinatura-linha">Assinatura Cliente</div></div>' : ''}</div>`;
             };
 
             if(tipoImpressaoAtual==='recibo') {
                 const css = papel==='bobina'?'estilo-bobina':'recibo-quitacao';
-                const reciboHtml = `<div class="via-impressao ${css}"><center><h3>AGROVIDA MAIS</h3><br><h2>RECIBO</h2></center><br><p style="text-align:justify">Declaramos que <strong>${currentClient.nome}</strong> (CPF: ${currentClient.cpf||'-'}) realizou a quitação total de seus débitos.</p><br><br><div class="assinatura-box"><div class="assinatura-linha">Assinatura</div></div></div>`;
+                const reciboHtml = `<div class="via-impressao ${css}"><center><h3>AGROVIDA MAIS</h3><br><h2>RECIBO</h2><p>Nota Ref: #${notaNum}</p></center><br><p style="text-align:justify">Declaramos que <strong>${currentClient.nome}</strong> (CPF: ${currentClient.cpf||'-'}) realizou a quitação total de seus débitos.</p><br><br><div class="assinatura-box"><div class="assinatura-linha">Assinatura</div></div></div>`;
                 area.innerHTML = reciboHtml + '<div class="corte-linha"></div>' + reciboHtml; 
             } else {
                 area.innerHTML = gerarVia("VIA DA LOJA") + '<div class="corte-linha"></div>' + gerarVia("VIA DO CLIENTE"); 
@@ -551,9 +552,6 @@
             window.print();
         }
 
-        function showToast(msg) { const c=document.getElementById('toast-container'); const t=document.createElement('div'); t.className='toast'; t.innerHTML=`<i class="fas fa-check-circle"></i> ${msg}`; c.appendChild(t); setTimeout(()=>t.remove(),3000); }
-
-        // Helpers de Input
         document.addEventListener('keydown', e => {
             if(e.key==='Enter' && e.target.classList.contains('input-next')) {
                 e.preventDefault();
@@ -565,6 +563,7 @@
         });
         const mascaraCPF = i => i.value = i.value.replace(/\D/g,"").slice(0,11).replace(/(\d{3})(\d)/,"$1.$2").replace(/(\d{3})(\d)/,"$1.$2").replace(/(\d{3})(\d{1,2})$/,"$1-$2");
         const mascaraTel = i => i.value = i.value.replace(/\D/g,"").slice(0,11).replace(/^(\d{2})(\d)/,"($1) $2").replace(/(\d{5})(\d{4})$/,"$1-$2");
+        function showToast(msg) { const c=document.getElementById('toast-container'); const t=document.createElement('div'); t.className='toast'; t.innerHTML=`<i class="fas fa-check-circle"></i> ${msg}`; c.appendChild(t); setTimeout(()=>t.remove(),3000); }
     </script>
 </body>
 </html>
