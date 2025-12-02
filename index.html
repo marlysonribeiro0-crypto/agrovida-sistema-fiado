@@ -3,612 +3,3321 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agrovida PRO - Sistema Oficial</title>
+    <title>Agrovida PRO - Sistema de Gestão de Fiado</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <style>
-        :root { --primary: #009e2a; --primary-dark: #007a21; --secondary: #2c3e50; --accent: #ffb900; --bg: #f4f7f6; --text: #2c3e50; --white: #ffffff; --danger: #e74c3c; --border: #e0e0e0; }
-        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Segoe UI', Inter, sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; color: var(--text); }
-
-        /* LOGIN */
-        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--secondary); z-index: 10000; display: flex; justify-content: center; align-items: center; flex-direction: column; padding: 20px; }
-        .login-box { background: white; padding: 40px; border-radius: 15px; text-align: center; width: 100%; max-width: 350px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-        .login-box img { max-width: 150px; margin-bottom: 20px; }
-        .pin-input { font-size: 2rem; letter-spacing: 5px; text-align: center; width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 20px; }
-        .btn-login { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 1.1rem; cursor: pointer; font-weight: bold; }
-
-        /* LOADING */
-        #loading-screen { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.95); z-index:9000; display:none; justify-content:center; align-items:center; flex-direction:column; }
-        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* SIDEBAR */
-        .sidebar { width: 280px; background: var(--secondary); color: var(--white); display: flex; flex-direction: column; padding: 20px 0; box-shadow: 2px 0 10px rgba(0,0,0,0.1); transition: 0.3s; z-index: 1000; height: 100%; }
-        .brand { text-align: center; margin-bottom: 30px; padding: 20px 15px; background: white; }
-        .brand img { max-width: 100%; height: auto; display: block; margin: 0 auto; }
-        
-        .mobile-menu-btn { display: none; position: fixed; top: 15px; left: 15px; z-index: 2000; background: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 5px; font-size: 1.2rem; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 900; backdrop-filter: blur(2px); }
-
-        .menu-item { padding: 15px 25px; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #bdc3c7; transition: 0.2s; text-decoration: none; font-size: 1rem; border-left: 4px solid transparent; position: relative; }
-        .menu-item:hover { background: rgba(255,255,255,0.05); color: var(--white); }
-        .menu-item.active { background: rgba(255,255,255,0.1); color: var(--white); border-left-color: var(--accent); }
-        .menu-item.active i { color: var(--accent); } 
-        .notify-badge { background-color: var(--danger); color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 10px; position: absolute; right: 20px; font-weight: bold; display: none; animation: pulse-red 2s infinite; }
-        @keyframes pulse-red { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-
-        /* MAIN CONTENT */
-        .main-content { flex: 1; overflow-y: auto; padding: 30px; position: relative; width: 100%; }
-        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; margin-top: 10px; }
-        .page-title { font-size: 1.6rem; font-weight: 700; color: var(--secondary); display: flex; align-items: center; gap: 10px; }
-
-        @media (max-width: 768px) {
-            .sidebar { position: fixed; left: -280px; top: 0; height: 100%; }
-            .sidebar.active { left: 0; }
-            .mobile-menu-btn { display: block; }
-            .sidebar-overlay.active { display: block; }
-            .main-content { padding: 15px; padding-top: 60px; }
-            .dashboard-grid, .grid-detalhe, .form-grid { grid-template-columns: 1fr !important; gap: 15px !important; }
-            .full-width { grid-column: span 1 !important; }
-            .page-header { flex-direction: column; align-items: flex-start; gap: 10px; }
-            .page-header .btn-primary, .page-header .btn-back { width: 100%; justify-content: center; }
+        /* ===== VARIÁVEIS DE CORES ===== */
+        :root {
+            --primary: #009e2a;
+            --primary-light: #4cd964;
+            --primary-dark: #007a21;
+            --secondary: #2c3e50;
+            --secondary-light: #34495e;
+            --accent: #ffb900;
+            --accent-dark: #e6a500;
+            --bg: #f5f9fc;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+            --text-light: #7f8c8d;
+            --white: #ffffff;
+            --danger: #e74c3c;
+            --danger-light: #fddfdc;
+            --warning: #f39c12;
+            --success: #27ae60;
+            --success-light: #d5f5e3;
+            --info: #3498db;
+            --border: #e1e8ed;
+            --shadow: rgba(0, 0, 0, 0.08);
+            --shadow-hover: rgba(0, 0, 0, 0.12);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --transition: all 0.3s ease;
         }
 
-        /* COMPONENTES */
-        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .grid-detalhe { display: grid; grid-template-columns: 2fr 1fr; gap: 25px; }
-        .card { background: var(--white); padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid var(--border); margin-bottom: 15px; }
-        .card-icon { width: 50px; height: 50px; border-radius: 10px; background: #e8f8f5; color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 15px; }
-        .card-value { font-size: 2rem; font-weight: bold; color: var(--secondary); margin-top: 5px; }
+        /* ===== RESET E BASE ===== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-        .btn-primary { background: var(--primary); color: white; border: none; padding: 10px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px; }
-        .btn-back { background: transparent; border: 1px solid #ccc; color: #666; padding: 8px 15px; border-radius: 6px; cursor: pointer; }
-        
-        .table-container { background: var(--white); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 500px; }
-        th { background: #f8f9fa; padding: 15px 20px; text-align: left; font-size: 0.9rem; color: #7f8c8d; text-transform: uppercase; }
-        td { padding: 15px 20px; border-bottom: 1px solid #eee; font-size: 0.95rem; }
-        .action-btn { background: var(--secondary); color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 0.9rem; }
-        
-        /* SEARCH BAR */
-        .search-container { display: flex; align-items: center; background: #fff; border: 1px solid #ddd; border-radius: 50px; padding: 5px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.3s; margin-bottom: 20px; }
-        .search-container:focus-within { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.1); }
-        .search-container i { color: #aaa; font-size: 1.2rem; }
-        .search-input { border: none; outline: none; width: 100%; padding: 10px; font-size: 1rem; margin-left: 10px; background: transparent; }
+        body {
+            font-family: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-        /* FORM */
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #555; }
-        .form-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
-        .full-width { grid-column: span 2; }
+        /* ===== TELA DE LOGIN ===== */
+        #login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary-dark) 100%);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
 
-        /* OUTROS */
-        .btn-gold { background: var(--accent); color: #fff; border: none; padding: 12px; border-radius: 8px; width: 100%; margin-top: 10px; font-weight: bold; cursor: pointer; }
-        .btn-archive { background: #e67e22; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; margin-top: 10px; font-weight: bold; cursor: pointer; }
-        .btn-history { background: #3498db; color: white; border: none; padding: 10px; border-radius: 6px; width: 100%; margin-top: 10px; cursor: pointer; }
-        .btn-edit-client { background: #f39c12; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; flex: 1; }
-        .btn-delete-client { background: var(--danger); color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; flex: 1; }
-        
-        /* ALERTS */
-        .alert-card { border-left: 5px solid var(--danger); background: #fff5f5; padding: 15px; margin-bottom: 15px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); flex-wrap: wrap; gap: 10px; }
-        .status-badge { padding: 3px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: bold; white-space: nowrap; }
-        .status-debt { background: #fadbd8; color: #c0392b; }
-        .status-ok { background: #d5f5e3; color: #27ae60; }
+        .login-container {
+            background: var(--white);
+            padding: 40px;
+            border-radius: var(--radius);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.5s ease-out;
+        }
 
-        /* MODALS */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; padding: 10px; }
-        .modal-content { background: white; padding: 25px; border-radius: 15px; width: 100%; max-width: 500px; max-height: 85vh; overflow-y: auto; }
-        .history-item { border: 1px solid #eee; padding: 15px; margin-bottom: 10px; border-radius: 8px; background: #fafafa; }
-        .history-detail { display: none; margin-top: 10px; background: #fff; padding: 10px; border: 1px solid #eee; }
-        .history-detail.show { display: block; }
-        #modal-history-overlay { z-index: 2000; }
-        #modal-print-overlay { z-index: 3000; } 
+        .login-logo {
+            max-width: 200px;
+            max-height: 80px;
+            margin: 0 auto 25px;
+            display: block;
+            object-fit: contain;
+        }
 
-        .view-section { display: none; }
-        .view-section.active { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .login-title {
+            color: var(--secondary);
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
 
-        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; pointer-events: none; }
-        .toast { background: var(--secondary); color: white; padding: 15px 25px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid var(--primary); pointer-events: auto; }
+        .login-subtitle {
+            color: var(--text-light);
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
 
-        /* LABEL NUMERO DA NOTA */
+        .pin-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .pin-input {
+            width: 60px;
+            height: 60px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 1.8rem;
+            text-align: center;
+            font-weight: bold;
+            color: var(--secondary);
+            transition: var(--transition);
+        }
+
+        .pin-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 158, 42, 0.1);
+        }
+
+        .pin-input.filled {
+            border-color: var(--primary);
+            background-color: rgba(0, 158, 42, 0.05);
+        }
+
+        .btn-login {
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 15px;
+            width: 100%;
+            border-radius: var(--radius-sm);
+            font-size: 1.1rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px rgba(0, 158, 42, 0.2);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .login-footer {
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        /* ===== LOADING SCREEN ===== */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            backdrop-filter: blur(5px);
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--primary);
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 280px;
+            background: var(--secondary);
+            color: var(--white);
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            z-index: 1000;
+            height: 100%;
+            position: relative;
+        }
+
+        .brand {
+            padding: 20px 25px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .brand-logo {
+            max-width: 200px;
+            max-height: 80px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            object-fit: contain;
+        }
+
+        .brand-version {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 5px;
+            letter-spacing: 1px;
+        }
+
+        .nav-menu {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 10px;
+        }
+
+        .menu-item {
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: rgba(255, 255, 255, 0.8);
+            transition: var(--transition);
+            text-decoration: none;
+            font-size: 1rem;
+            border-radius: var(--radius-sm);
+            margin: 5px 10px;
+            position: relative;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--white);
+            transform: translateX(5px);
+        }
+
+        .menu-item.active {
+            background: rgba(255, 255, 255, 0.12);
+            color: var(--white);
+            border-left: 4px solid var(--accent);
+            font-weight: 600;
+        }
+
+        .menu-item.active i {
+            color: var(--accent);
+        }
+
+        .menu-item .badge {
+            background-color: var(--danger);
+            color: white;
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+            position: absolute;
+            right: 15px;
+            font-weight: bold;
+            display: none;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* ===== MOBILE MENU ===== */
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 2000;
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: var(--transition);
+        }
+
+        .mobile-menu-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 900;
+            backdrop-filter: blur(3px);
+        }
+
+        /* ===== CONTEÚDO PRINCIPAL ===== */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            position: relative;
+            width: 100%;
+            transition: var(--transition);
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-title .icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 158, 42, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .page-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== DASHBOARD ESPECÍFICO ===== */
+        .dashboard-search-container {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px var(--shadow);
+            position: relative;
+        }
+
+        .dashboard-search {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .dashboard-search i {
+            color: var(--text-light);
+            font-size: 1.2rem;
+        }
+
+        .dashboard-search input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 12px;
+            font-size: 1rem;
+            background: transparent;
+            color: var(--text);
+        }
+
+        .dashboard-search input::placeholder {
+            color: var(--text-light);
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            border-radius: 0 0 var(--radius) var(--radius);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            border: 1px solid var(--border);
+            border-top: none;
+        }
+
+        .search-result-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-result-item:hover {
+            background: rgba(0, 158, 42, 0.05);
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-info {
+            flex: 1;
+        }
+
+        .search-result-name {
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 3px;
+        }
+
+        .search-result-details {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .search-result-nota {
+            background: rgba(0, 158, 42, 0.1);
+            color: var(--primary);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* ===== RESPONSIVIDADE ===== */
+        @media (max-width: 992px) {
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                top: 0;
+                height: 100%;
+            }
+            
+            .sidebar.active {
+                left: 0;
+            }
+            
+            .mobile-menu-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .sidebar-overlay.active {
+                display: block;
+            }
+            
+            .main-content {
+                padding: 20px;
+                padding-top: 80px;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .page-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .login-container {
+                padding: 30px 20px;
+            }
+            
+            .pin-input {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+            
+            .main-content {
+                padding: 15px;
+                padding-top: 70px;
+            }
+            
+            .dashboard-search {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+        }
+
+        /* ===== COMPONENTES REUTILIZÁVEIS ===== */
+        .btn {
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: var(--transition);
+            border: none;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px rgba(0, 158, 42, 0.2);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: var(--secondary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px rgba(44, 62, 80, 0.2);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--secondary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            background: rgba(44, 62, 80, 0.05);
+            border-color: var(--secondary-light);
+        }
+
+        .btn-success {
+            background: linear-gradient(to right, var(--success), #2ecc71);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px rgba(46, 204, 113, 0.2);
+        }
+
+        .btn-warning {
+            background: linear-gradient(to right, var(--warning), #f1c40f);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px rgba(243, 156, 18, 0.2);
+        }
+
+        .btn-danger {
+            background: linear-gradient(to right, var(--danger), #c0392b);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px rgba(231, 76, 60, 0.2);
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+        }
+
+        .btn-lg {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: var(--radius);
+            box-shadow: 0 5px 15px var(--shadow);
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 20px var(--shadow-hover);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ===== GRIDS ===== */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .stats-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: 0 5px 15px var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: var(--transition);
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px var(--shadow-hover);
+        }
+
+        .stats-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            flex-shrink: 0;
+        }
+
+        .stats-content {
+            flex: 1;
+        }
+
+        .stats-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .stats-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--secondary);
+            line-height: 1;
+        }
+
+        .stats-trend {
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 8px;
+        }
+
+        .trend-up {
+            color: var(--success);
+        }
+
+        .trend-down {
+            color: var(--danger);
+        }
+
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        /* ===== LAYOUT DETALHE OTIMIZADO ===== */
+        .detalhe-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            align-items: start;
+        }
+
+        .detalhe-main {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .detalhe-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* Bloco compacto para ações rápidas */
+        .quick-actions-compact {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .quick-action-compact {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .quick-action-compact:hover {
+            background: rgba(0, 158, 42, 0.05);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .quick-action-compact .icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            background: rgba(0, 158, 42, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .quick-action-compact .label {
+            font-weight: 600;
+            color: var(--secondary);
+            font-size: 0.8rem;
+            line-height: 1.2;
+        }
+
+        @media (max-width: 992px) {
+            .grid-2col,
+            .detalhe-layout {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .quick-actions-compact {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .quick-actions-compact {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* ===== TABELAS ===== */
+        .table-container {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: 0 5px 15px var(--shadow);
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        .table thead {
+            background: rgba(0, 158, 42, 0.05);
+        }
+
+        .table th {
+            padding: 18px 20px;
+            text-align: left;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .table tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .table tbody tr:hover {
+            background: rgba(0, 158, 42, 0.03);
+        }
+
+        .table td {
+            padding: 16px 20px;
+            font-size: 0.95rem;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        /* ===== FORMULÁRIOS ===== */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--secondary);
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            transition: var(--transition);
+            background: var(--card-bg);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 158, 42, 0.1);
+        }
+
+        .form-control.has-error {
+            border-color: var(--danger);
+        }
+
+        .form-error {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* ===== BADGES ===== */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-success {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .badge-warning {
+            background: #fef5e7;
+            color: var(--warning);
+        }
+
+        .badge-danger {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .badge-info {
+            background: #e8f4fc;
+            color: var(--info);
+        }
+
+        /* ===== NOTIFICAÇÕES ===== */
+        .notification-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .notification-item {
+            background: var(--card-bg);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            border-left: 4px solid var(--warning);
+            box-shadow: 0 3px 10px var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            transition: var(--transition);
+        }
+
+        .notification-item:hover {
+            transform: translateX(5px);
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 5px;
+        }
+
+        .notification-desc {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .notification-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* ===== BARRA DE BUSCA ===== */
+        .search-container {
+            display: flex;
+            align-items: center;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 5px 20px;
+            box-shadow: 0 3px 10px var(--shadow);
+            transition: var(--transition);
+            margin-bottom: 20px;
+        }
+
+        .search-container:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 158, 42, 0.1);
+        }
+
+        .search-icon {
+            color: var(--text-light);
+            font-size: 1.2rem;
+        }
+
+        .search-input {
+            border: none;
+            outline: none;
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            margin-left: 10px;
+            background: transparent;
+            color: var(--text);
+        }
+
+        /* ===== MODAIS ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            backdrop-filter: blur(3px);
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 500px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            border: none;
+            background: none;
+            font-size: 1.8rem;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: var(--transition);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--danger);
+        }
+
+        /* ===== SEÇÕES ===== */
+        .view-section {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* ===== TOAST NOTIFICATIONS ===== */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: var(--secondary);
+            color: white;
+            padding: 16px 24px;
+            border-radius: var(--radius-sm);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            max-width: 350px;
+            pointer-events: auto;
+            animation: toastSlideIn 0.3s ease-out;
+            border-left: 4px solid var(--primary);
+        }
+
+        @keyframes toastSlideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast-success {
+            background: var(--success);
+            border-left-color: var(--success);
+        }
+
+        .toast-error {
+            background: var(--danger);
+            border-left-color: var(--danger);
+        }
+
+        .toast-warning {
+            background: var(--warning);
+            border-left-color: var(--warning);
+        }
+
+        .toast-icon {
+            font-size: 1.2rem;
+        }
+
+        .toast-close {
+            margin-left: auto;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .toast-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        /* ===== CLIENT DETAIL VIEW ===== */
+        .client-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .client-info {
+            flex: 1;
+        }
+
+        .client-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 5px;
+        }
+
+        .client-meta {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .client-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .client-balance {
+            text-align: right;
+            min-width: 200px;
+        }
+
+        .balance-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        .balance-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .balance-positive {
+            color: var(--danger);
+        }
+
+        .balance-negative {
+            color: var(--success);
+        }
+
         .note-number-badge {
             background-color: var(--secondary);
             color: var(--accent);
-            padding: 5px 10px;
-            border-radius: 5px;
+            padding: 8px 15px;
+            border-radius: var(--radius-sm);
             font-weight: bold;
-            font-size: 0.9rem;
-            display: inline-block;
-            margin-right: 10px;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
         }
 
-        /* IMPRESSÃO */
-        #area-impressao { display: none; }
-        @media print {
-            body > *:not(#area-impressao) { display: none !important; }
-            #area-impressao { display: block !important; position: absolute; left: 0; top: 0; background: white; width: 100%; }
-            .estilo-bobina { width: 72mm; margin: 0 auto; font-family: monospace; font-size: 11px; }
-            .estilo-a4 { width: 100%; font-family: sans-serif; padding: 20px; }
-            .corte-linha { border-bottom: 1px dashed #000; margin: 20px 0; display:block }
-            .via-impressao { margin-bottom: 40px; page-break-inside: avoid; }
+        /* ===== FORMS COMPACTOS PARA DETALHE ===== */
+        .compact-form {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: 0 5px 15px var(--shadow);
         }
+
+        .compact-form-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .form-row .form-control {
+            padding: 10px;
+            font-size: 0.9rem;
+        }
+
+        .form-control-small {
+            padding: 8px 10px;
+            font-size: 0.9rem;
+            height: 38px;
+        }
+
+        /* ===== BOTÕES CONDICIONAIS ===== */
+        .conditional-actions {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            display: none;
+        }
+
+        .conditional-actions.show {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .conditional-actions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        @media (max-width: 576px) {
+            .conditional-actions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== IMPRESSÃO ===== */
+        #print-area {
+            display: none;
+        }
+
+        @media print {
+            body > *:not(#print-area) {
+                display: none !important;
+            }
+            
+            #print-area {
+                display: block !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                background: white;
+                width: 100%;
+                padding: 20px;
+            }
+            
+            .receipt {
+                font-family: monospace;
+                max-width: 72mm;
+                margin: 0 auto;
+                font-size: 12px;
+            }
+            
+            .receipt-a4 {
+                font-family: sans-serif;
+                max-width: 210mm;
+                margin: 0 auto;
+                padding: 20mm;
+            }
+            
+            .cut-line {
+                border-bottom: 1px dashed #000;
+                margin: 20px 0;
+                display: block;
+            }
+            
+            .receipt-copy {
+                margin-bottom: 40px;
+                page-break-inside: avoid;
+            }
+        }
+
+        /* ===== ANIMAÇÕES ===== */
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .slide-in-right {
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* ===== UTILITIES ===== */
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .text-left { text-align: left; }
+        .mb-10 { margin-bottom: 10px; }
+        .mb-20 { margin-bottom: 20px; }
+        .mb-30 { margin-bottom: 30px; }
+        .mt-10 { margin-top: 10px; }
+        .mt-20 { margin-top: 20px; }
+        .mt-30 { margin-top: 30px; }
+        .w-100 { width: 100%; }
+        .d-flex { display: flex; }
+        .d-none { display: none; }
+        .align-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-10 { gap: 10px; }
+        .gap-15 { gap: 15px; }
+        .gap-20 { gap: 20px; }
     </style>
 </head>
 <body>
 
-    <button class="mobile-menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
-
+    <!-- Tela de Login -->
     <div id="login-screen">
-        <div class="login-box">
-            <img src="logo.png" alt="Agrovida" style="max-height:80px">
-            <h3 style="color: var(--secondary); margin-bottom: 20px;">Sistema Bloqueado</h3>
-            <input type="password" id="login-pin" class="pin-input" placeholder="****" maxlength="4" inputmode="numeric">
-            <button class="btn-login" onclick="checkLogin()">ENTRAR</button>
-            <p id="login-error" style="color: red; margin-top: 10px; display: none;">Senha Incorreta!</p>
+        <div class="login-container">
+            <img src="logo.png" alt="Agrovida PRO" class="login-logo" onerror="this.src='https://via.placeholder.com/200x80/009e2a/ffffff?text=AGROVIDA+PRO'">
+            <h2 class="login-title">Sistema de Gestão de Fiado</h2>
+            <p class="login-subtitle">Digite sua senha para acessar o sistema</p>
+            
+            <div class="pin-container">
+                <input type="password" maxlength="1" class="pin-input" id="pin-1" oninput="movePin(1)">
+                <input type="password" maxlength="1" class="pin-input" id="pin-2" oninput="movePin(2)">
+                <input type="password" maxlength="1" class="pin-input" id="pin-3" oninput="movePin(3)">
+                <input type="password" maxlength="1" class="pin-input" id="pin-4" oninput="movePin(4)">
+            </div>
+            
+            <button class="btn-login" onclick="checkLogin()">
+                <i class="fas fa-lock-open"></i> ACESSAR SISTEMA
+            </button>
+            
+            <p id="login-error" style="color: var(--danger); margin-top: 15px; display: none;">
+                <i class="fas fa-exclamation-circle"></i> Senha incorreta!
+            </p>
+            
+            <div class="login-footer">
+                <p>Agrovida PRO v2.0 • Sistema Oficial</p>
+            </div>
         </div>
     </div>
 
-    <div id="loading-screen" style="display:none"><div class="spinner"></div><p style="margin-top:15px; color:#555">Sincronizando...</p></div>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="spinner"></div>
+        <p style="margin-top: 20px; color: var(--text); font-weight: 600;">Carregando sistema...</p>
+        <p style="margin-top: 10px; color: var(--text-light); font-size: 0.9rem;">Sincronizando com a nuvem</p>
+    </div>
+
+    <!-- Toast Container -->
     <div id="toast-container"></div>
 
-    <div id="modal-print-overlay" class="modal-overlay">
-        <div class="modal-content" style="text-align: center;">
-            <h3>🖨️ Imprimir</h3>
-            <div style="display: flex; gap: 15px; justify-content: center; margin-top:20px;">
-                <button class="btn-primary" style="flex:1; background:white; color:#333; border:1px solid #ddd; flex-direction:column" onclick="executarImpressao('bobina')"><i class="fas fa-receipt fa-2x"></i><br>Bobina</button>
-                <button class="btn-primary" style="flex:1; background:white; color:#333; border:1px solid #ddd; flex-direction:column" onclick="executarImpressao('a4')"><i class="fas fa-file-alt fa-2x"></i><br>A4</button>
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="brand">
+            <img src="logo.png" alt="Agrovida" class="brand-logo" onerror="this.src='https://via.placeholder.com/200x80/ffffff/2c3e50?text=AGROVIDA'">
+            <div class="brand-version">SISTEMA PRO v2.0</div>
+        </div>
+        
+        <div class="nav-menu">
+            <a id="menu-dashboard" class="menu-item active" onclick="navTo('dashboard')">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </a>
+            
+            <a id="menu-notifications" class="menu-item" onclick="navTo('notifications')">
+                <i class="fas fa-bell"></i> Notificações 
+                <span id="badge-notify" class="badge">0</span>
+            </a>
+            
+            <a id="menu-clientes" class="menu-item" onclick="navTo('clientes')">
+                <i class="fas fa-users"></i> Clientes
+            </a>
+            
+            <a id="menu-cadastro" class="menu-item" onclick="novoCadastro()">
+                <i class="fas fa-user-plus"></i> Novo Cadastro
+            </a>
+            
+            <a id="menu-relatorios" class="menu-item" onclick="navTo('relatorios')">
+                <i class="fas fa-chart-bar"></i> Relatórios
+            </a>
+        </div>
+        
+        <div class="sidebar-footer">
+            <p>Agrovida Comércio & Serviços</p>
+            <p style="font-size: 0.7rem; margin-top: 5px;">Sistema Oficial de Gestão</p>
+        </div>
+    </aside>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-content">
+        <!-- Dashboard -->
+        <section id="view-dashboard" class="view-section active">
+            <div class="page-header">
+                <div class="page-title">
+                    <div class="icon"><i class="fas fa-chart-line"></i></div>
+                    <span>Dashboard</span>
+                </div>
+                <div class="page-actions">
+                    <button class="btn btn-outline" onclick="syncData()">
+                        <i class="fas fa-sync-alt"></i> Sincronizar
+                    </button>
+                    <button class="btn btn-primary" onclick="novoCadastro()">
+                        <i class="fas fa-plus"></i> Novo Cliente
+                    </button>
+                </div>
             </div>
-            <button onclick="document.getElementById('modal-print-overlay').style.display='none'" style="margin-top:20px; border:none; background:none; cursor:pointer; color:#999">Cancelar</button>
+            
+            <!-- Campo de pesquisa no Dashboard com resultados em tempo real -->
+            <div class="dashboard-search-container">
+                <div class="dashboard-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="dashboard-search" placeholder="Pesquisar por nome do cliente ou número da nota..." oninput="searchFromDashboard()" autocomplete="off">
+                </div>
+                <div class="search-results" id="dashboard-search-results">
+                    <!-- Resultados da pesquisa serão inseridos aqui -->
+                </div>
+            </div>
+            
+            <div class="dashboard-grid">
+                <div class="stats-card">
+                    <div class="stats-icon" style="background: rgba(231, 76, 60, 0.1); color: var(--danger);">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
+                    <div class="stats-content">
+                        <div class="stats-label">A RECEBER</div>
+                        <div class="stats-value" id="dash-total">R$ 0,00</div>
+                    </div>
+                </div>
+                
+                <div class="stats-card">
+                    <div class="stats-icon" style="background: rgba(52, 152, 219, 0.1); color: var(--info);">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stats-content">
+                        <div class="stats-label">CLIENTES</div>
+                        <div class="stats-value" id="dash-clientes">0</div>
+                    </div>
+                </div>
+                
+                <div class="stats-card">
+                    <div class="stats-icon" style="background: rgba(46, 204, 113, 0.1); color: var(--success);">
+                        <i class="fas fa-hand-holding-usd"></i>
+                    </div>
+                    <div class="stats-content">
+                        <div class="stats-label">PAGOS HOJE</div>
+                        <div class="stats-value" id="dash-pagos-hoje">R$ 0,00</div>
+                    </div>
+                </div>
+                
+                <div class="stats-card">
+                    <div class="stats-icon" style="background: rgba(243, 156, 18, 0.1); color: var(--warning);">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stats-content">
+                        <div class="stats-label">ATRASADOS</div>
+                        <div class="stats-value" id="dash-atrasados">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid-2col">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-history"></i> Atividade Recente</h3>
+                    </div>
+                    <div id="recent-activity">
+                        <p style="text-align: center; color: var(--text-light); padding: 30px 0;">
+                            <i class="fas fa-clock fa-2x mb-10"></i><br>
+                            Nenhuma atividade recente
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-user-clock"></i> Clientes Pendentes</h3>
+                    </div>
+                    <div id="pending-clients">
+                        <p style="text-align: center; color: var(--text-light); padding: 30px 0;">
+                            <i class="fas fa-check-circle fa-2x mb-10"></i><br>
+                            Nenhum cliente pendente
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Notificações -->
+        <section id="view-notifications" class="view-section">
+            <div class="page-header">
+                <div class="page-title">
+                    <div class="icon"><i class="fas fa-bell"></i></div>
+                    <span>Notificações</span>
+                </div>
+            </div>
+            
+            <div class="notification-list" id="notification-list">
+                <!-- Notificações serão carregadas aqui -->
+            </div>
+        </section>
+
+        <!-- Clientes -->
+        <section id="view-clientes" class="view-section">
+            <div class="page-header">
+                <div class="page-title">
+                    <div class="icon"><i class="fas fa-users"></i></div>
+                    <span>Clientes</span>
+                </div>
+                <div class="page-actions">
+                    <button class="btn btn-primary" onclick="novoCadastro()">
+                        <i class="fas fa-plus"></i> Novo Cliente
+                    </button>
+                </div>
+            </div>
+            
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" id="search-client" placeholder="Buscar cliente por nome, CPF, cidade ou número da nota..." onkeyup="renderClients()">
+            </div>
+            
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nota</th>
+                            <th>Nome</th>
+                            <th>Contato</th>
+                            <th>Saldo</th>
+                            <th>Status</th>
+                            <th style="width: 60px;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientes-list">
+                        <!-- Clientes serão carregados aqui -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="text-center mt-20">
+                <div class="badge badge-info" id="clients-count">0 clientes encontrados</div>
+            </div>
+        </section>
+
+        <!-- Cadastro/Edição de Cliente -->
+        <section id="view-cadastro" class="view-section">
+            <div class="page-header">
+                <div class="page-title">
+                    <button class="btn btn-outline" onclick="navTo('clientes')">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </button>
+                    <span id="form-title">Novo Cliente</span>
+                </div>
+            </div>
+            
+            <div class="card">
+                <input type="hidden" id="edit-id">
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="cad-nome">Nome Completo *</label>
+                        <input type="text" id="cad-nome" class="form-control" placeholder="Digite o nome completo">
+                        <div class="form-error" id="error-nome"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="cad-cpf">CPF</label>
+                        <input type="text" id="cad-cpf" class="form-control" placeholder="000.000.000-00" oninput="mascaraCPF(this)">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="cad-tel">Telefone</label>
+                        <input type="tel" id="cad-tel" class="form-control" placeholder="(00) 00000-0000" oninput="mascaraTel(this)">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="cad-cidade">Cidade</label>
+                        <input type="text" id="cad-cidade" class="form-control" placeholder="Cidade do cliente">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="cad-end">Endereço</label>
+                        <input type="text" id="cad-end" class="form-control" placeholder="Rua, número, bairro">
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button class="btn btn-outline" onclick="navTo('clientes')">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button class="btn btn-primary" onclick="saveClient()">
+                        <i class="fas fa-save"></i> Salvar Cliente
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Detalhes do Cliente - LAYOUT OTIMIZADO -->
+        <section id="view-detalhe" class="view-section">
+            <div class="page-header">
+                <div class="page-title">
+                    <button class="btn btn-outline" onclick="navTo('clientes')">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </button>
+                    <span id="detalhe-nome">Nome do Cliente</span>
+                </div>
+                
+                <div class="client-balance">
+                    <div class="balance-label">SALDO ATUAL</div>
+                    <div class="balance-value balance-positive" id="detalhe-saldo">R$ 0,00</div>
+                    <div id="note-number-display" class="note-number-badge mt-10">
+                        <i class="fas fa-file-invoice"></i> NOTA Nº --
+                    </div>
+                </div>
+            </div>
+            
+            <div class="detalhe-layout">
+                <!-- Coluna principal (mais larga) -->
+                <div class="detalhe-main">
+                    <!-- Extrato -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-receipt"></i> Extrato</h3>
+                            <button class="btn btn-sm btn-outline" onclick="abrirModalPrint('extrato')">
+                                <i class="fas fa-print"></i> Imprimir
+                            </button>
+                        </div>
+                        
+                        <div style="max-height: 400px; overflow-y: auto;">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Descrição</th>
+                                        <th>Valor</th>
+                                        <th style="width: 50px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="detalhe-itens">
+                                    <!-- Itens do extrato serão carregados aqui -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Informações do Cliente -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-info-circle"></i> Informações do Cliente</h3>
+                        </div>
+                        <div class="client-meta">
+                            <div class="client-meta-item">
+                                <i class="fas fa-id-card"></i>
+                                <span id="info-cpf">CPF: -</span>
+                            </div>
+                            <div class="client-meta-item">
+                                <i class="fas fa-phone"></i>
+                                <span id="info-tel">Tel: -</span>
+                            </div>
+                            <div class="client-meta-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span id="info-cidade">Cidade: -</span>
+                            </div>
+                            <div class="client-meta-item">
+                                <i class="fas fa-home"></i>
+                                <span id="info-end">Endereço: -</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Coluna lateral (mais estreita) com formulários -->
+                <div class="detalhe-sidebar">
+                    <!-- Nova Venda -->
+                    <div class="compact-form">
+                        <div class="compact-form-title">
+                            <i class="fas fa-cart-plus"></i> Nova Venda
+                        </div>
+                        
+                        <div class="form-group mb-10">
+                            <input type="text" id="add-desc" class="form-control form-control-small" placeholder="Produto/Serviço">
+                        </div>
+                        
+                        <div class="form-row">
+                            <input type="number" id="add-qtd" class="form-control form-control-small" value="1" min="0.01" step="0.01" placeholder="Qtd">
+                            <input type="number" id="add-val" class="form-control form-control-small" placeholder="R$ Unit" min="0" step="0.01">
+                        </div>
+                        
+                        <div class="form-group mb-10">
+                            <input type="number" id="add-desc-val" class="form-control form-control-small" placeholder="Desconto (R$)" min="0" step="0.01">
+                        </div>
+                        
+                        <button class="btn btn-primary w-100" onclick="addItem()">
+                            <i class="fas fa-plus-circle"></i> Lançar Venda
+                        </button>
+                    </div>
+                    
+                    <!-- Receber Pagamento -->
+                    <div class="compact-form">
+                        <div class="compact-form-title">
+                            <i class="fas fa-hand-holding-usd"></i> Receber Pagamento
+                        </div>
+                        
+                        <div class="form-group mb-10">
+                            <input type="number" id="pay-val" class="form-control form-control-small" placeholder="Valor (R$)" min="0" step="0.01">
+                        </div>
+                        
+                        <button class="btn btn-success w-100" onclick="addPayment()">
+                            <i class="fas fa-check-circle"></i> Registrar Pagamento
+                        </button>
+                    </div>
+                    
+                    <!-- Ações rápidas (sempre visíveis) -->
+                    <div class="compact-form">
+                        <div class="compact-form-title">
+                            <i class="fas fa-cogs"></i> Ações Rápidas
+                        </div>
+                        
+                        <div class="form-row">
+                            <button class="btn btn-outline w-100" onclick="abrirModalPrint('extrato')">
+                                <i class="fas fa-print"></i> Imprimir
+                            </button>
+                            <button class="btn btn-outline w-100" onclick="abrirHistorico()">
+                                <i class="fas fa-history"></i> Histórico
+                            </button>
+                        </div>
+                        
+                        <div class="form-row">
+                            <button class="btn btn-warning w-100" onclick="prepareEdit()">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button class="btn btn-danger w-100" onclick="deleteClient()">
+                                <i class="fas fa-trash"></i> Excluir
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Botões condicionais (Recibo e Arquivar) - Só aparecem quando saldo <= 0 -->
+                    <div class="conditional-actions" id="conditional-buttons">
+                        <div class="compact-form-title">
+                            <i class="fas fa-check-circle"></i> Ações para Conta Zerada
+                        </div>
+                        
+                        <div class="conditional-actions-grid">
+                            <button class="btn btn-warning" onclick="abrirModalPrint('recibo')">
+                                <i class="fas fa-award"></i> Gerar Recibo
+                            </button>
+                            <button class="btn btn-outline" onclick="arquivarCiclo()">
+                                <i class="fas fa-box-archive"></i> Arquivar Ciclo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Relatórios -->
+        <section id="view-relatorios" class="view-section">
+            <div class="page-header">
+                <div class="page-title">
+                    <div class="icon"><i class="fas fa-chart-bar"></i></div>
+                    <span>Relatórios</span>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3 class="mb-20">Relatórios Disponíveis</h3>
+                <p class="mb-30">Em breve: relatórios financeiros, histórico de vendas, análise de inadimplência e muito mais.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modais -->
+    <div id="modal-print-overlay" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-print"></i> Imprimir</h3>
+                <button class="modal-close" onclick="closeModal('modal-print-overlay')">&times;</button>
+            </div>
+            
+            <div style="text-align: center; padding: 20px 0;">
+                <p>Selecione o formato de impressão:</p>
+                
+                <div style="display: flex; gap: 20px; justify-content: center; margin: 30px 0;">
+                    <button class="quick-action-compact" onclick="executarImpressao('bobina')">
+                        <div class="icon">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+                        <div class="label">Bobina (80mm)</div>
+                    </button>
+                    
+                    <button class="quick-action-compact" onclick="executarImpressao('a4')">
+                        <div class="icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="label">A4</div>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
     <div id="modal-history-overlay" class="modal-overlay">
         <div class="modal-content">
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px;"><h3>📜 Histórico</h3><button onclick="document.getElementById('modal-history-overlay').style.display='none'" style="border:none; background:none; font-size:1.5rem">&times;</button></div>
-            <div id="history-list"></div>
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-history"></i> Histórico</h3>
+                <button class="modal-close" onclick="closeModal('modal-history-overlay')">&times;</button>
+            </div>
+            
+            <div id="history-list" style="max-height: 400px; overflow-y: auto;">
+                <!-- Histórico será carregado aqui -->
+            </div>
         </div>
     </div>
 
-    <aside class="sidebar">
-        <div class="brand"><img src="logo.png" alt="Agrovida Mais"></div>
-        <nav>
-            <a id="menu-dashboard" class="menu-item active" onclick="navTo('dashboard')"><i class="fas fa-chart-line"></i> Dashboard</a>
-            <a id="menu-notifications" class="menu-item" onclick="navTo('notifications')"><i class="fas fa-bell"></i> Notificações <span id="badge-notify" class="notify-badge">0</span></a>
-            <a id="menu-clientes" class="menu-item" onclick="navTo('clientes')"><i class="fas fa-users"></i> Clientes</a>
-            <a id="menu-cadastro" class="menu-item" onclick="novoCadastro()"><i class="fas fa-user-plus"></i> Novo Cadastro</a>
-        </nav>
-        <div style="margin-top: auto; padding: 20px; text-align: center; font-size: 0.75rem; color: #7f8c8d;">Agrovida v31.0 (Oficial)</div>
-    </aside>
-
-    <main class="main-content">
-        <section id="view-dashboard" class="view-section active">
-            <div class="page-header"><div class="page-title">Visão Geral</div></div>
-            <div class="dashboard-grid">
-                <div class="card"><div class="card-icon"><i class="fas fa-file-invoice-dollar"></i></div><div class="card-label">A RECEBER</div><div class="card-value" id="dash-total" style="color:var(--danger)">R$ 0,00</div></div>
-                <div class="card"><div class="card-icon"><i class="fas fa-users"></i></div><div class="card-label">CLIENTES</div><div class="card-value" id="dash-clientes">0</div></div>
-            </div>
-        </section>
-
-        <section id="view-notifications" class="view-section">
-            <div class="page-header"><div class="page-title">🔔 Alertas de Vencimento</div></div>
-            <div class="card"><div id="notification-list"></div></div>
-        </section>
-
-        <section id="view-clientes" class="view-section">
-            <div class="page-header">
-                <div class="page-title">Gerenciar Clientes</div>
-                <button class="btn-primary" onclick="novoCadastro()"><i class="fas fa-plus"></i> Novo</button>
-            </div>
-            <div class="table-container" style="padding: 20px; background: #f9f9f9;">
-                <div class="search-container">
-                    <i class="fas fa-search"></i>
-                    <input type="text" class="search-input" id="search-client" placeholder="Buscar cliente..." onkeyup="renderClients()">
-                </div>
-                <table style="width: 100%; background: white;">
-                    <thead><tr><th>Nota</th><th>Nome</th><th>Saldo</th><th>Status</th><th>Ação</th></tr></thead>
-                    <tbody id="clientes-list"></tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="view-cadastro" class="view-section">
-            <div class="page-header"><div class="page-title"><button class="btn-back" onclick="navTo('clientes')"><i class="fas fa-arrow-left"></i></button> &nbsp; <span id="form-title">Cadastro</span></div></div>
-            <div class="card">
-                <input type="hidden" id="edit-id">
-                <div class="form-grid">
-                    <div class="full-width form-group"><label>Nome</label><input type="text" id="cad-nome" class="input-next"></div>
-                    <div class="form-group"><label>CPF</label><input type="text" id="cad-cpf" oninput="mascaraCPF(this)" class="input-next"></div>
-                    <div class="form-group"><label>Tel</label><input type="tel" id="cad-tel" oninput="mascaraTel(this)" class="input-next"></div>
-                    <div class="form-group"><label>Cidade</label><input type="text" id="cad-cidade" class="input-next"></div>
-                    <div class="full-width form-group"><label>Endereço</label><input type="text" id="cad-end" class="input-next"></div>
-                </div>
-                <button class="btn-primary" style="width: 100%; justify-content: center; margin-top: 20px;" onclick="saveClient()">Salvar</button>
-            </div>
-        </section>
-
-        <section id="view-detalhe" class="view-section">
-            <div class="page-header">
-                <div class="page-title"><button class="btn-back" onclick="navTo('clientes')"><i class="fas fa-arrow-left"></i></button> &nbsp; 
-                    <span id="detalhe-nome">Nome</span>
-                </div>
-                <div style="text-align: right">
-                    <div id="note-number-display" class="note-number-badge" style="display:none">NOTA Nº --</div>
-                    <small>SALDO</small>
-                    <div id="detalhe-saldo" style="font-size: 1.5rem; font-weight: 800; color:var(--danger)">R$ 0,00</div>
-                </div>
-            </div>
-            
-            <div class="grid-detalhe">
-                <div class="card">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;"><h3>Extrato</h3><button class="btn-back" onclick="abrirModalPrint('extrato')"><i class="fas fa-print"></i></button></div>
-                    <div style="max-height: 400px; overflow-y: auto;"><table><tbody id="detalhe-itens"></tbody></table></div>
-                </div>
-
-                <div>
-                    <button id="btn-quitacao" class="btn-gold" style="display:none" onclick="abrirModalPrint('recibo')"><i class="fas fa-award"></i> Recibo</button>
-                    <button id="btn-archive" class="btn-archive" style="display:none" onclick="arquivarCiclo()"><i class="fas fa-box-archive"></i> Arquivar</button>
-
-                    <div class="card" style="margin-top: 15px; border: 2px solid var(--primary); padding:15px;">
-                        <h4 style="color:var(--primary); margin-top:0"><i class="fas fa-cart-plus"></i> Venda</h4>
-                        <input type="text" id="add-desc" class="input-next" placeholder="Produto" style="margin-bottom:10px; width:100%">
-                        <div style="display:flex; gap:10px"><input type="number" id="add-qtd" class="input-next" value="1" placeholder="Qtd" style="flex:1"><input type="number" id="add-val" class="input-next" placeholder="R$ Un" style="flex:1.5"></div>
-                        <input type="number" id="add-desc-val" class="input-next" placeholder="Desc (R$)" style="margin-top:10px; border-color:#ffeaa7; width:100%">
-                        <button class="btn-primary" style="width:100%; justify-content:center; margin-top:15px" onclick="addItem()">Lançar</button>
-                    </div>
-
-                    <div class="card" style="margin-top: 15px; background: #f0fdf4; padding:15px;">
-                        <h4 style="color:green; margin-top:0">Receber</h4>
-                        <input type="number" id="pay-val" class="input-next" placeholder="R$" style="width:100%; padding:10px; margin-bottom:10px;">
-                        <button class="btn-primary" style="width:100%; background:green; justify-content:center;" onclick="addPayment()">Confirmar</button>
-                    </div>
-
-                    <div class="card" style="margin-top: 15px; padding:15px;">
-                        <h4 style="color:#999; margin-top:0">Opções</h4>
-                        <p id="info-cpf" style="font-weight:bold; margin:5px 0"></p><p id="info-tel" style="margin:5px 0"></p>
-                        <div style="display:flex; gap:10px; margin-top:15px;">
-                            <button class="btn-edit-client" onclick="prepareEdit()"><i class="fas fa-edit"></i> Editar</button>
-                            <button class="btn-delete-client" onclick="deleteClient()"><i class="fas fa-trash"></i> Excluir</button>
-                        </div>
-                        <button class="btn-history" onclick="abrirHistorico()"><i class="fas fa-history"></i> Histórico</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <div id="area-impressao"></div>
+    <!-- Área de Impressão -->
+    <div id="print-area"></div>
 
     <script>
-        // === HELPERS NO TOPO ===
-        const mascaraCPF = i => i.value = i.value.replace(/\D/g,"").slice(0,11).replace(/(\d{3})(\d)/,"$1.$2").replace(/(\d{3})(\d)/,"$1.$2").replace(/(\d{3})(\d{1,2})$/,"$1-$2");
-        const mascaraTel = i => i.value = i.value.replace(/\D/g,"").slice(0,11).replace(/^(\d{2})(\d)/,"($1) $2").replace(/(\d{5})(\d{4})$/,"$1-$2");
-        const formatCurrency = val => {
-            if (val === undefined || val === null || isNaN(val)) return "R$ 0,00";
-            return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        };
-        function showToast(msg) { const c=document.getElementById('toast-container'); const t=document.createElement('div'); t.className='toast'; t.innerHTML=`<i class="fas fa-check-circle"></i> ${msg}`; c.appendChild(t); setTimeout(()=>t.remove(),3000); }
-
-        // --- CHAVES ---
+        // ===== VARIÁVEIS GLOBAIS =====
         const firebaseConfig = {
-          apiKey: "AIzaSyAPQST9oBIqYOYNksPNaARpyW8K-nXiRtE",
-          authDomain: "agrovida-system.firebaseapp.com",
-          projectId: "agrovida-system",
-          storageBucket: "agrovida-system.firebasestorage.app",
-          messagingSenderId: "808503446468",
-          appId: "1:808503446468:web:989d4e3fd8716c0fe3f291"
+            apiKey: "AIzaSyAPQST9oBIqYOYNksPNaARpyW8K-nXiRtE",
+            authDomain: "agrovida-system.firebaseapp.com",
+            projectId: "agrovida-system",
+            storageBucket: "agrovida-system.firebasestorage.app",
+            messagingSenderId: "808503446468",
+            appId: "1:808503446468:web:989d4e3fd8716c0fe3f291"
         };
 
-        let db, localClients = [], currentClient = null, tipoImpressaoAtual = 'extrato', dadosImpressaoTemp = null;
+        let db;
+        let localClients = [];
+        let currentClient = null;
+        let tipoImpressaoAtual = 'extrato';
+        let dadosImpressaoTemp = null;
+        let systemConfig = {
+            pin: '1234',
+            diasVencimento: 35,
+            whatsappEnabled: true
+        };
 
-        document.getElementById('login-pin').addEventListener('keydown', function(e) { if(e.key==='Enter') checkLogin(); });
+        // ===== INICIALIZAÇÃO =====
+        document.addEventListener('DOMContentLoaded', function() {
+            // Focar no primeiro campo de PIN
+            document.getElementById('pin-1').focus();
+            
+            // Carregar configurações do localStorage
+            const savedConfig = localStorage.getItem('agrovida-config');
+            if (savedConfig) {
+                systemConfig = JSON.parse(savedConfig);
+            }
+        });
+
+        // ===== FUNÇÕES DE UTILIDADE =====
+        function mascaraCPF(input) {
+            let value = input.value.replace(/\D/g, "");
+            if (value.length > 11) value = value.substring(0, 11);
+            
+            if (value.length <= 11) {
+                value = value.replace(/(\d{3})(\d)/, "$1.$2");
+                value = value.replace(/(\d{3})(\d)/, "$1.$2");
+                value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+            }
+            
+            input.value = value;
+        }
+
+        function mascaraTel(input) {
+            let value = input.value.replace(/\D/g, "");
+            
+            if (value.length > 11) value = value.substring(0, 11);
+            
+            if (value.length <= 11) {
+                if (value.length <= 10) {
+                    value = value.replace(/^(\d{2})(\d)/, "($1) $2");
+                    value = value.replace(/(\d{4})(\d)/, "$1-$2");
+                } else {
+                    value = value.replace(/^(\d{2})(\d)/, "($1) $2");
+                    value = value.replace(/(\d{5})(\d)/, "$1-$2");
+                }
+            }
+            
+            input.value = value;
+        }
+
+        function formatCurrency(value) {
+            if (value === undefined || value === null || isNaN(value)) {
+                return "R$ 0,00";
+            }
+            return value.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            });
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            
+            const icon = type === 'success' ? 'check-circle' : 
+                        type === 'error' ? 'exclamation-circle' : 
+                        type === 'warning' ? 'exclamation-triangle' : 'info-circle';
+            
+            toast.innerHTML = `
+                <i class="fas fa-${icon} toast-icon"></i>
+                <span>${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Remover toast após 4 segundos
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.remove();
+                }
+            }, 4000);
+        }
+
+        // ===== SISTEMA DE LOGIN =====
+        function movePin(current) {
+            const pinInput = document.getElementById(`pin-${current}`);
+            const pinValue = pinInput.value;
+            
+            // Marcar campo como preenchido
+            if (pinValue) {
+                pinInput.classList.add('filled');
+                
+                // Mover para o próximo campo
+                if (current < 4) {
+                    document.getElementById(`pin-${current + 1}`).focus();
+                }
+            } else {
+                pinInput.classList.remove('filled');
+                
+                // Voltar para o campo anterior se apagou
+                if (current > 1) {
+                    document.getElementById(`pin-${current - 1}`).focus();
+                }
+            }
+        }
 
         function checkLogin() {
-            if(document.getElementById('login-pin').value === '1234') {
+            // Juntar os 4 dígitos do PIN
+            const pin1 = document.getElementById('pin-1').value;
+            const pin2 = document.getElementById('pin-2').value;
+            const pin3 = document.getElementById('pin-3').value;
+            const pin4 = document.getElementById('pin-4').value;
+            const enteredPin = pin1 + pin2 + pin3 + pin4;
+            
+            // Verificar se a senha está correta
+            if (enteredPin === systemConfig.pin) {
+                // Login bem-sucedido
                 document.getElementById('login-screen').style.display = 'none';
+                showToast('Login realizado com sucesso!', 'success');
                 initFirebase();
-            } else { document.getElementById('login-error').style.display = 'block'; }
+            } else {
+                // Login falhou
+                document.getElementById('login-error').style.display = 'block';
+                
+                // Limpar campos e focar no primeiro
+                document.querySelectorAll('.pin-input').forEach(input => {
+                    input.value = '';
+                    input.classList.remove('filled');
+                });
+                document.getElementById('pin-1').focus();
+            }
         }
 
-        function initFirebase() {
-            if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-            db = firebase.firestore();
-            document.getElementById('loading-screen').style.display = 'flex';
-            db.collection("clients").onSnapshot(snap => {
-                localClients = [];
-                snap.forEach(doc => { let d = doc.data(); d.id = doc.id; localClients.push(d); });
-                document.getElementById('loading-screen').style.display = 'none';
-                refreshUI();
+        // ===== PESQUISA NO DASHBOARD =====
+        function searchFromDashboard() {
+            const searchTerm = document.getElementById('dashboard-search').value.toLowerCase().trim();
+            const resultsContainer = document.getElementById('dashboard-search-results');
+            
+            if (!searchTerm) {
+                resultsContainer.style.display = 'none';
+                resultsContainer.innerHTML = '';
+                return;
+            }
+            
+            // Se tiver pelo menos 2 caracteres, fazer a busca
+            if (searchTerm.length < 2) return;
+            
+            // Buscar clientes por nome, número da nota ou telefone
+            const searchResults = localClients.filter(client => {
+                const clientName = client.nome ? client.nome.toLowerCase() : '';
+                const noteNumber = client.activeNoteNumber ? client.activeNoteNumber.toString().toLowerCase() : '';
+                const clientPhone = client.tel ? client.tel.toLowerCase() : '';
+                const clientCPF = client.cpf ? client.cpf.toLowerCase() : '';
+                const clientCity = client.cidade ? client.cidade.toLowerCase() : '';
+                
+                return clientName.includes(searchTerm) || 
+                       noteNumber.includes(searchTerm) ||
+                       clientPhone.includes(searchTerm) ||
+                       clientCPF.includes(searchTerm) ||
+                       clientCity.includes(searchTerm);
             });
+            
+            // Mostrar resultados
+            if (searchResults.length > 0) {
+                let resultsHTML = '';
+                
+                // Limitar a 10 resultados
+                searchResults.slice(0, 10).forEach(client => {
+                    const balance = (client.transactions || []).reduce((sum, transaction) => sum + transaction.total, 0);
+                    const noteNumber = client.activeNoteNumber ? `#${client.activeNoteNumber}` : 'Sem nota';
+                    
+                    resultsHTML += `
+                        <div class="search-result-item" onclick="openClientFromSearch('${client.id}')">
+                            <div class="search-result-info">
+                                <div class="search-result-name">${client.nome}</div>
+                                <div class="search-result-details">
+                                    ${client.cidade || ''} • ${client.tel || ''}
+                                    <br>Saldo: ${formatCurrency(balance)}
+                                </div>
+                            </div>
+                            <div class="search-result-nota">${noteNumber}</div>
+                        </div>
+                    `;
+                });
+                
+                if (searchResults.length > 10) {
+                    resultsHTML += `
+                        <div class="search-result-item" style="text-align: center; color: var(--text-light); font-style: italic;">
+                            +${searchResults.length - 10} mais resultados...
+                        </div>
+                    `;
+                }
+                
+                resultsContainer.innerHTML = resultsHTML;
+                resultsContainer.style.display = 'block';
+                
+                // Mudar para a aba de clientes automaticamente
+                if (!document.getElementById('view-clientes').classList.contains('active')) {
+                    // Atualizar a busca na tela de clientes também
+                    document.getElementById('search-client').value = searchTerm;
+                    navTo('clientes');
+                    // Re-renderizar a lista de clientes com o termo de busca
+                    setTimeout(() => renderClients(), 100);
+                }
+                
+            } else {
+                resultsContainer.innerHTML = `
+                    <div class="search-result-item" style="text-align: center; color: var(--text-light); font-style: italic;">
+                        Nenhum cliente encontrado para "${searchTerm}"
+                    </div>
+                `;
+                resultsContainer.style.display = 'block';
+            }
         }
 
-        function toggleSidebar() { document.querySelector('.sidebar').classList.toggle('active'); document.querySelector('.sidebar-overlay').classList.toggle('active'); }
+        function openClientFromSearch(clientId) {
+            const searchInput = document.getElementById('dashboard-search');
+            const resultsContainer = document.getElementById('dashboard-search-results');
+            
+            // Limpar busca e resultados
+            searchInput.value = '';
+            resultsContainer.style.display = 'none';
+            resultsContainer.innerHTML = '';
+            
+            // Abrir o cliente
+            openClient(clientId);
+        }
+
+        // ===== FIREBASE E SINCORNIZAÇÃO =====
+        function initFirebase() {
+            try {
+                // Mostrar tela de loading
+                document.getElementById('loading-screen').style.display = 'flex';
+                
+                // Inicializar Firebase
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(firebaseConfig);
+                }
+                
+                db = firebase.firestore();
+                
+                // Configurar listener em tempo real para clientes
+                db.collection("clients").onSnapshot(snapshot => {
+                    localClients = [];
+                    snapshot.forEach(doc => {
+                        let clientData = doc.data();
+                        clientData.id = doc.id;
+                        localClients.push(clientData);
+                    });
+                    
+                    // Atualizar UI
+                    refreshUI();
+                    
+                    // Esconder loading screen
+                    document.getElementById('loading-screen').style.display = 'none';
+                }, error => {
+                    console.error("Erro ao sincronizar dados:", error);
+                    document.getElementById('loading-screen').style.display = 'none';
+                    showToast('Erro ao sincronizar dados', 'error');
+                });
+                
+            } catch (error) {
+                console.error("Erro ao inicializar Firebase:", error);
+                document.getElementById('loading-screen').style.display = 'none';
+                showToast('Erro ao conectar com o servidor', 'error');
+            }
+        }
+
+        function syncData() {
+            showToast('Sincronizando dados...', 'info');
+            // O listener do Firebase já atualiza automaticamente
+        }
+
+        // ===== NAVEGAÇÃO =====
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
 
         function navTo(screenId) {
-            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
-            let menuId = 'menu-' + screenId;
-            if(screenId === 'detalhe') menuId = 'menu-clientes';
-            const activeMenu = document.getElementById(menuId);
-            if(activeMenu) activeMenu.classList.add('active');
-
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.getElementById('view-'+screenId).classList.add('active');
-            document.querySelector('.sidebar').classList.remove('active');
-            document.querySelector('.sidebar-overlay').classList.remove('active');
-
-            if(screenId === 'clientes') { renderClients(); setTimeout(()=>document.getElementById('search-client').focus(),100); }
-            if(screenId === 'notifications') renderNotifications();
-        }
-
-        function refreshUI() {
-            let total = 0;
-            localClients.forEach(c => {
-                const bal = (c.transactions||[]).reduce((a,b)=>a+b.total,0);
-                if(bal > 0.05) total += bal;
+            // Esconder todas as seções
+            document.querySelectorAll('.view-section').forEach(section => {
+                section.classList.remove('active');
             });
-            document.getElementById('dash-total').innerText = formatCurrency(total);
-            document.getElementById('dash-clientes').innerText = localClients.length;
-            checkOverdueClients(); 
-            if(document.getElementById('view-clientes').classList.contains('active')) renderClients();
-            if(document.getElementById('view-notifications').classList.contains('active')) renderNotifications();
-            if(document.getElementById('view-detalhe').classList.contains('active') && currentClient) {
-                const up = localClients.find(c=>c.id===currentClient.id);
-                if(up) { currentClient=up; updateDetailView(); } else { navTo('clientes'); }
+            
+            // Mostrar a seção solicitada
+            document.getElementById(`view-${screenId}`).classList.add('active');
+            
+            // Atualizar menu ativo
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Encontrar e ativar o item correto do menu
+            let menuId = `menu-${screenId}`;
+            if (screenId === 'detalhe') {
+                menuId = 'menu-clientes';
+            }
+            
+            const activeMenuItem = document.getElementById(menuId);
+            if (activeMenuItem) {
+                activeMenuItem.classList.add('active');
+            }
+            
+            // Fechar sidebar no mobile
+            if (window.innerWidth <= 992) {
+                toggleSidebar();
+            }
+            
+            // Executar ações específicas da página
+            switch(screenId) {
+                case 'clientes':
+                    renderClients();
+                    setTimeout(() => {
+                        document.getElementById('search-client').focus();
+                    }, 100);
+                    break;
+                    
+                case 'notifications':
+                    renderNotifications();
+                    break;
+                    
+                case 'dashboard':
+                    updateDashboard();
+                    setTimeout(() => {
+                        document.getElementById('dashboard-search').focus();
+                    }, 100);
+                    break;
             }
         }
 
-        // --- SISTEMA DE NUMERAÇÃO ---
-        async function getNextNoteNumber() {
-            const configRef = db.collection('config').doc('metadata');
-            try {
-                const doc = await configRef.get();
-                let nextNum = 1;
-                if (doc.exists) { nextNum = (doc.data().lastNoteNumber || 0) + 1; }
-                await configRef.set({ lastNoteNumber: nextNum }, { merge: true });
-                return nextNum;
-            } catch (e) {
-                return Date.now().toString().slice(-4); 
+        // ===== ATUALIZAÇÃO DA UI =====
+        function refreshUI() {
+            // Atualizar dashboard
+            updateDashboard();
+            
+            // Atualizar notificações se a tela estiver ativa
+            if (document.getElementById('view-notifications').classList.contains('active')) {
+                renderNotifications();
+            }
+            
+            // Atualizar lista de clientes se a tela estiver ativa
+            if (document.getElementById('view-clientes').classList.contains('active')) {
+                renderClients();
+            }
+            
+            // Atualizar detalhes do cliente se a tela estiver ativa
+            if (document.getElementById('view-detalhe').classList.contains('active') && currentClient) {
+                const updatedClient = localClients.find(c => c.id === currentClient.id);
+                if (updatedClient) {
+                    currentClient = updatedClient;
+                    updateDetailView();
+                } else {
+                    // Cliente foi deletado
+                    showToast('Cliente não encontrado', 'warning');
+                    navTo('clientes');
+                }
             }
         }
 
-        async function addItem() {
-            const desc = document.getElementById('add-desc').value;
-            const qtd = parseFloat(document.getElementById('add-qtd').value)||1;
-            const val = parseFloat(document.getElementById('add-val').value);
-            const dsc = parseFloat(document.getElementById('add-desc-val').value)||0;
-            if(!desc || !val) return alert("Preencha dados");
+        function updateDashboard() {
+            // Calcular totais
+            let totalReceber = 0;
+            let totalPagosHoje = 0;
+            let clientesAtrasados = 0;
             
-            const tot = (qtd*val)-dsc;
-            let noteNum = currentClient.activeNoteNumber;
-
-            if (!noteNum && (!currentClient.transactions || currentClient.transactions.length === 0)) {
-                if (currentClient.nome.toUpperCase().includes("TESTE")) { noteNum = "TESTE-00"; } 
-                else { noteNum = await getNextNoteNumber(); }
+            localClients.forEach(client => {
+                const balance = (client.transactions || []).reduce((sum, transaction) => sum + transaction.total, 0);
+                
+                if (balance > 0.05) {
+                    totalReceber += balance;
+                    
+                    // Verificar se está atrasado
+                    const overdueData = getOverdueData(client);
+                    if (overdueData) {
+                        clientesAtrasados++;
+                    }
+                }
+                
+                // Calcular pagos hoje (simulação)
+                const hoje = new Date().toISOString().split('T')[0];
+                const pagamentosHoje = (client.transactions || []).filter(t => 
+                    t.type === 'credit' && t.date.includes(hoje)
+                ).reduce((sum, t) => sum + Math.abs(t.total), 0);
+                
+                totalPagosHoje += pagamentosHoje;
+            });
+            
+            // Atualizar valores no dashboard
+            document.getElementById('dash-total').textContent = formatCurrency(totalReceber);
+            document.getElementById('dash-clientes').textContent = localClients.length;
+            document.getElementById('dash-pagos-hoje').textContent = formatCurrency(totalPagosHoje);
+            document.getElementById('dash-atrasados').textContent = clientesAtrasados;
+            
+            // Atualizar badge de notificações
+            const notifyBadge = document.getElementById('badge-notify');
+            if (clientesAtrasados > 0) {
+                notifyBadge.textContent = clientesAtrasados;
+                notifyBadge.style.display = 'inline-block';
+            } else {
+                notifyBadge.style.display = 'none';
             }
-
-            const item = { id: Date.now(), date: new Date().toISOString(), desc, qtd, unit: val, discount: dsc, total: tot, type: 'debt' };
-            let trs = currentClient.transactions || []; trs.push(item);
-            
-            let updateData = { transactions: trs };
-            if (noteNum) updateData.activeNoteNumber = noteNum;
-
-            db.collection("clients").doc(currentClient.id).update(updateData).then(() => showToast("Lançado!"));
-            
-            document.getElementById('add-desc').value=''; document.getElementById('add-val').value=''; document.getElementById('add-desc-val').value=''; document.getElementById('add-qtd').value='1'; document.getElementById('add-desc').focus();
         }
 
+        // ===== GERENCIAMENTO DE CLIENTES =====
         function novoCadastro() {
-            navTo('cadastro'); document.getElementById('form-title').innerText = "Novo Cliente"; document.getElementById('edit-id').value = "";
-            document.querySelectorAll('#view-cadastro input').forEach(i=>i.value=''); setTimeout(() => document.getElementById('cad-nome').focus(), 300);
+            navTo('cadastro');
+            document.getElementById('form-title').textContent = "Novo Cliente";
+            document.getElementById('edit-id').value = "";
+            
+            // Limpar formulário
+            const formInputs = document.querySelectorAll('#view-cadastro .form-control');
+            formInputs.forEach(input => {
+                input.value = '';
+                input.classList.remove('has-error');
+            });
+            
+            // Esconder mensagens de erro
+            document.querySelectorAll('.form-error').forEach(error => {
+                error.style.display = 'none';
+            });
+            
+            // Focar no primeiro campo
+            setTimeout(() => {
+                document.getElementById('cad-nome').focus();
+            }, 300);
         }
 
         function prepareEdit() {
-            navTo('cadastro'); document.getElementById('form-title').innerText = "Editar Cliente"; document.getElementById('edit-id').value = currentClient.id;
-            document.getElementById('cad-nome').value = currentClient.nome; document.getElementById('cad-cpf').value = currentClient.cpf||'';
-            document.getElementById('cad-tel').value = currentClient.tel||''; document.getElementById('cad-cidade').value = currentClient.cidade||'';
-            document.getElementById('cad-end').value = currentClient.endereco||'';
+            if (!currentClient) return;
+            
+            navTo('cadastro');
+            document.getElementById('form-title').textContent = "Editar Cliente";
+            document.getElementById('edit-id').value = currentClient.id;
+            
+            // Preencher formulário com dados do cliente
+            document.getElementById('cad-nome').value = currentClient.nome || '';
+            document.getElementById('cad-cpf').value = currentClient.cpf || '';
+            document.getElementById('cad-tel').value = currentClient.tel || '';
+            document.getElementById('cad-cidade').value = currentClient.cidade || '';
+            document.getElementById('cad-end').value = currentClient.endereco || '';
+            
+            // Focar no primeiro campo
+            setTimeout(() => {
+                document.getElementById('cad-nome').focus();
+            }, 300);
         }
 
         function saveClient() {
-            const id = document.getElementById('edit-id').value;
-            const nome = document.getElementById('cad-nome').value;
-            if(!nome) return alert("Nome obrigatório");
-            const data = { nome, cpf: document.getElementById('cad-cpf').value, tel: document.getElementById('cad-tel').value, cidade: document.getElementById('cad-cidade').value, endereco: document.getElementById('cad-end').value };
-            if(id) { db.collection("clients").doc(id).update(data).then(()=>{ showToast("Editado!"); navTo('detalhe'); }); } 
-            else { data.transactions = []; data.history = []; data.createdAt = new Date().toISOString(); db.collection("clients").add(data).then(()=>{ showToast("Criado!"); navTo('clientes'); }); }
+            // Validar formulário
+            const nome = document.getElementById('cad-nome').value.trim();
+            if (!nome) {
+                showError('cad-nome', 'Nome é obrigatório');
+                return;
+            }
+            
+            // Preparar dados do cliente
+            const clientData = {
+                nome: nome,
+                cpf: document.getElementById('cad-cpf').value.trim(),
+                tel: document.getElementById('cad-tel').value.trim(),
+                cidade: document.getElementById('cad-cidade').value.trim(),
+                endereco: document.getElementById('cad-end').value.trim(),
+                updatedAt: new Date().toISOString()
+            };
+            
+            const clientId = document.getElementById('edit-id').value;
+            
+            // Mostrar loading
+            showLoading(true);
+            
+            if (clientId) {
+                // Atualizar cliente existente
+                db.collection("clients").doc(clientId).update(clientData)
+                    .then(() => {
+                        showToast('Cliente atualizado com sucesso!', 'success');
+                        showLoading(false);
+                        
+                        // Voltar para a tela de detalhes
+                        if (currentClient && currentClient.id === clientId) {
+                            currentClient = { ...currentClient, ...clientData };
+                            updateDetailView();
+                        }
+                        
+                        navTo('detalhe');
+                    })
+                    .catch(error => {
+                        console.error("Erro ao atualizar cliente:", error);
+                        showToast('Erro ao atualizar cliente', 'error');
+                        showLoading(false);
+                    });
+            } else {
+                // Criar novo cliente
+                clientData.createdAt = new Date().toISOString();
+                clientData.transactions = [];
+                clientData.history = [];
+                
+                db.collection("clients").add(clientData)
+                    .then(docRef => {
+                        showToast('Cliente criado com sucesso!', 'success');
+                        showLoading(false);
+                        
+                        // Abrir detalhes do novo cliente
+                        currentClient = { id: docRef.id, ...clientData };
+                        updateDetailView();
+                        navTo('detalhe');
+                    })
+                    .catch(error => {
+                        console.error("Erro ao criar cliente:", error);
+                        showToast('Erro ao criar cliente', 'error');
+                        showLoading(false);
+                    });
+            }
         }
 
-        function deleteClient() { if(confirm("Tem certeza?")) db.collection("clients").doc(currentClient.id).delete().then(()=>{ showToast("Excluído!"); navTo('clientes'); }); }
+        function showError(inputId, message) {
+            const input = document.getElementById(inputId);
+            const errorElement = document.getElementById(`error-${inputId.split('-')[1]}`);
+            
+            input.classList.add('has-error');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            
+            // Focar no campo com erro
+            input.focus();
+        }
+
+        function showLoading(show) {
+            if (show) {
+                document.getElementById('loading-screen').style.display = 'flex';
+            } else {
+                document.getElementById('loading-screen').style.display = 'none';
+            }
+        }
 
         function renderClients() {
-            const term = document.getElementById('search-client').value.toLowerCase();
-            const tbody = document.getElementById('clientes-list'); tbody.innerHTML='';
-            localClients.sort((a,b) => { const balA = (a.transactions||[]).reduce((x,y)=>x+y.total,0); const balB = (b.transactions||[]).reduce((x,y)=>x+y.total,0); return balB - balA; });
-            localClients.forEach(c => {
-                if(c.nome.toLowerCase().includes(term) || (c.cpf && c.cpf.includes(term))) {
-                    const bal = (c.transactions||[]).reduce((a,b)=>a+b.total,0);
-                    let st = '<span class="status-badge status-ok">OK</span>';
-                    if(bal > 0.05) st = '<span class="status-badge status-debt">Devendo</span>';
-                    let notaDisplay = c.activeNoteNumber ? `<b>#${c.activeNoteNumber}</b>` : '-';
-                    tbody.innerHTML += `<tr onclick="openClient('${c.id}')" style="cursor:pointer"><td>${notaDisplay}</td><td><b>${c.nome}</b><br><small style="color:#999">${c.cidade||''}</small></td><td style="font-weight:bold; color:${bal>0.05?'var(--danger)':'var(--primary)'}">${formatCurrency(bal)}</td><td>${st}</td><td><button class="action-btn"><i class="fas fa-chevron-right"></i></button></td></tr>`;
-                }
+            const searchTerm = document.getElementById('search-client').value.toLowerCase();
+            const tbody = document.getElementById('clientes-list');
+            
+            // Filtrar clientes
+            const filteredClients = localClients.filter(client => {
+                return (
+                    client.nome.toLowerCase().includes(searchTerm) ||
+                    (client.cpf && client.cpf.includes(searchTerm)) ||
+                    (client.cidade && client.cidade.toLowerCase().includes(searchTerm)) ||
+                    (client.tel && client.tel.includes(searchTerm)) ||
+                    (client.activeNoteNumber && client.activeNoteNumber.toString().includes(searchTerm))
+                );
             });
+            
+            // Ordenar por saldo (maior para menor)
+            filteredClients.sort((a, b) => {
+                const balanceA = (a.transactions || []).reduce((sum, t) => sum + t.total, 0);
+                const balanceB = (b.transactions || []).reduce((sum, t) => sum + t.total, 0);
+                return balanceB - balanceA;
+            });
+            
+            // Gerar HTML da tabela
+            let tableHTML = '';
+            
+            if (filteredClients.length === 0) {
+                tableHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px 20px;">
+                            <i class="fas fa-users fa-2x mb-10" style="color: var(--text-light);"></i>
+                            <p style="color: var(--text-light);">Nenhum cliente encontrado</p>
+                            ${searchTerm ? '<button class="btn btn-sm btn-outline mt-10" onclick="document.getElementById(\'search-client\').value=\'\'; renderClients()">Limpar busca</button>' : ''}
+                        </td>
+                    </tr>
+                `;
+            } else {
+                filteredClients.forEach(client => {
+                    const balance = (client.transactions || []).reduce((sum, transaction) => sum + transaction.total, 0);
+                    
+                    // Determinar status
+                    let statusBadge = '';
+                    if (balance <= 0.05) {
+                        statusBadge = '<span class="badge badge-success">Em dia</span>';
+                    } else {
+                        const overdueData = getOverdueData(client);
+                        if (overdueData) {
+                            statusBadge = `<span class="badge badge-danger">Atrasado ${overdueData.days} dias</span>`;
+                        } else {
+                            statusBadge = '<span class="badge badge-warning">Pendente</span>';
+                        }
+                    }
+                    
+                    // Número da nota
+                    const noteNumber = client.activeNoteNumber ? `#${client.activeNoteNumber}` : '-';
+                    
+                    tableHTML += `
+                        <tr onclick="openClient('${client.id}')" style="cursor: pointer;">
+                            <td><strong>${noteNumber}</strong></td>
+                            <td>
+                                <div style="font-weight: 600;">${client.nome}</div>
+                                <small style="color: var(--text-light);">${client.cidade || 'Sem cidade'}</small>
+                            </td>
+                            <td>${client.tel || '-'}</td>
+                            <td style="font-weight: 700; color: ${balance > 0.05 ? 'var(--danger)' : 'var(--success)'}">
+                                ${formatCurrency(balance)}
+                            </td>
+                            <td>${statusBadge}</td>
+                            <td>
+                                <div class="table-actions">
+                                    <button class="btn btn-sm btn-outline" onclick="event.stopPropagation(); openClient('${client.id}')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            
+            tbody.innerHTML = tableHTML;
+            
+            // Atualizar contador
+            document.getElementById('clients-count').textContent = 
+                `${filteredClients.length} ${filteredClients.length === 1 ? 'cliente encontrado' : 'clientes encontrados'}`;
         }
 
-        function openClient(id) { currentClient = localClients.find(c=>c.id===id); updateDetailView(); navTo('detalhe'); }
+        function openClient(clientId) {
+            currentClient = localClients.find(c => c.id === clientId);
+            if (currentClient) {
+                updateDetailView();
+                navTo('detalhe');
+            }
+        }
 
         function updateDetailView() {
-            document.getElementById('detalhe-nome').innerText = currentClient.nome;
-            document.getElementById('info-cpf').innerText = "CPF: " + (currentClient.cpf||'-');
-            document.getElementById('info-tel').innerText = "Tel: " + (currentClient.tel||'-');
+            if (!currentClient) return;
             
+            // Atualizar informações básicas
+            document.getElementById('detalhe-nome').textContent = currentClient.nome;
+            document.getElementById('info-cpf').textContent = `CPF: ${currentClient.cpf || '-'}`;
+            document.getElementById('info-tel').textContent = `Tel: ${currentClient.tel || '-'}`;
+            document.getElementById('info-cidade').textContent = `Cidade: ${currentClient.cidade || '-'}`;
+            document.getElementById('info-end').textContent = `Endereço: ${currentClient.endereco || '-'}`;
+            
+            // Atualizar número da nota
             const noteBadge = document.getElementById('note-number-display');
             if (currentClient.activeNoteNumber) {
-                noteBadge.style.display = 'inline-block';
-                noteBadge.innerText = "NOTA Nº " + currentClient.activeNoteNumber;
+                noteBadge.innerHTML = `<i class="fas fa-file-invoice"></i> NOTA Nº ${currentClient.activeNoteNumber}`;
+                noteBadge.style.display = 'inline-flex';
             } else {
                 noteBadge.style.display = 'none';
             }
-
-            const tbody = document.getElementById('detalhe-itens'); tbody.innerHTML = '';
-            let total = 0; const trs = currentClient.transactions || [];
             
-            trs.forEach(t => {
-                total += t.total;
-                const isPay = t.type === 'credit';
-                tbody.innerHTML += `<tr><td><div style="font-weight:600; color:${isPay?'var(--primary)':'#333'}">${t.desc}</div><small style="color:#999">${t.qtd}x ${Math.abs(t.unit).toFixed(2)} ${t.discount>0?'(-'+t.discount+')':''} • ${new Date(t.date).toLocaleDateString()}</small></td><td class="text-right" style="color:${isPay?'var(--primary)':'#333'}; font-weight:bold">${isPay?'-':''} ${Math.abs(t.total).toFixed(2)}</td><td><button style="color:#ccc;border:none;background:none" onclick="deleteItem(${t.id})">&times;</button></td></tr>`;
-            });
-
-            document.getElementById('detalhe-saldo').innerText = formatCurrency(total);
-            const bQuit = document.getElementById('btn-quitacao');
-            const bArch = document.getElementById('btn-archive');
+            // Calcular saldo e renderizar extrato
+            const transactions = currentClient.transactions || [];
+            let totalBalance = 0;
+            let extratoHTML = '';
             
-            if(total <= 0.05 && trs.length > 0) {
-                bQuit.style.display='block'; bArch.style.display='block';
-                document.getElementById('detalhe-saldo').style.color = 'var(--primary)';
+            if (transactions.length === 0) {
+                extratoHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 40px 20px; color: var(--text-light);">
+                            <i class="fas fa-receipt fa-2x mb-10"></i>
+                            <p>Nenhuma transação registrada</p>
+                        </td>
+                    </tr>
+                `;
             } else {
-                bQuit.style.display='none'; bArch.style.display='none';
-                document.getElementById('detalhe-saldo').style.color = 'var(--danger)';
+                // Ordenar por data (mais recente primeiro)
+                const sortedTransactions = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                sortedTransactions.forEach(transaction => {
+                    totalBalance += transaction.total;
+                    
+                    const isPayment = transaction.type === 'credit';
+                    const date = new Date(transaction.date).toLocaleDateString('pt-BR');
+                    
+                    extratoHTML += `
+                        <tr>
+                            <td style="white-space: nowrap;">${date}</td>
+                            <td>
+                                <div style="font-weight: 500;">${transaction.desc}</div>
+                                <small style="color: var(--text-light);">
+                                    ${transaction.qtd}x ${formatCurrency(transaction.unit)} 
+                                    ${transaction.discount > 0 ? `(-${formatCurrency(transaction.discount)})` : ''}
+                                </small>
+                            </td>
+                            <td style="font-weight: 600; color: ${isPayment ? 'var(--success)' : 'var(--danger)'}; text-align: right;">
+                                ${isPayment ? '-' : ''}${formatCurrency(Math.abs(transaction.total))}
+                            </td>
+                            <td style="text-align: center;">
+                                <button class="btn btn-sm btn-outline" onclick="deleteTransaction(${transaction.id})" title="Excluir">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
             }
+            
+            // Atualizar extrato e saldo
+            document.getElementById('detalhe-itens').innerHTML = extratoHTML;
+            document.getElementById('detalhe-saldo').textContent = formatCurrency(totalBalance);
+            
+            // Atualizar cor do saldo
+            const saldoElement = document.getElementById('detalhe-saldo');
+            if (totalBalance <= 0.05) {
+                saldoElement.className = 'balance-value balance-negative';
+                saldoElement.style.color = 'var(--success)';
+            } else {
+                saldoElement.className = 'balance-value balance-positive';
+                saldoElement.style.color = 'var(--danger)';
+            }
+            
+            // Mostrar/ocultar botões condicionais (Recibo e Arquivar) - CORREÇÃO AQUI
+            const conditionalButtons = document.getElementById('conditional-buttons');
+            
+            // Verificar se pode mostrar os botões condicionais
+            // Apenas mostrar se o saldo for menor ou igual a 0.05 (praticamente zero)
+            // E se existem transações
+            if (Math.abs(totalBalance) <= 0.05 && transactions.length > 0) {
+                conditionalButtons.classList.add('show');
+            } else {
+                conditionalButtons.classList.remove('show');
+            }
+            
+            // Limpar campos de entrada
+            document.getElementById('add-desc').value = '';
+            document.getElementById('add-val').value = '';
+            document.getElementById('add-desc-val').value = '';
+            document.getElementById('add-qtd').value = '1';
+            document.getElementById('pay-val').value = '';
+            
+            // Focar no campo de descrição
+            document.getElementById('add-desc').focus();
+        }
+
+        // ===== TRANSAÇÕES =====
+        async function addItem() {
+            if (!currentClient) {
+                showToast('Selecione um cliente primeiro', 'warning');
+                return;
+            }
+            
+            const desc = document.getElementById('add-desc').value.trim();
+            const qtd = parseFloat(document.getElementById('add-qtd').value) || 1;
+            const val = parseFloat(document.getElementById('add-val').value);
+            const descVal = parseFloat(document.getElementById('add-desc-val').value) || 0;
+            
+            // Validar entrada
+            if (!desc) {
+                showToast('Informe a descrição do produto/serviço', 'warning');
+                document.getElementById('add-desc').focus();
+                return;
+            }
+            
+            if (!val || val <= 0) {
+                showToast('Informe um valor unitário válido', 'warning');
+                document.getElementById('add-val').focus();
+                return;
+            }
+            
+            // Calcular total
+            const total = (qtd * val) - descVal;
+            
+            // Gerar número da nota se necessário
+            let noteNumber = currentClient.activeNoteNumber;
+            
+            if (!noteNumber && (!currentClient.transactions || currentClient.transactions.length === 0)) {
+                if (currentClient.nome.toUpperCase().includes("TESTE")) {
+                    noteNumber = "TESTE-00";
+                } else {
+                    noteNumber = await getNextNoteNumber();
+                }
+            }
+            
+            // Criar transação
+            const transaction = {
+                id: Date.now(),
+                date: new Date().toISOString(),
+                desc: desc,
+                qtd: qtd,
+                unit: val,
+                discount: descVal,
+                total: total,
+                type: 'debt'
+            };
+            
+            // Atualizar transações do cliente
+            const transactions = currentClient.transactions || [];
+            transactions.push(transaction);
+            
+            const updateData = { transactions: transactions };
+            if (noteNumber) {
+                updateData.activeNoteNumber = noteNumber;
+            }
+            
+            // Salvar no Firestore
+            db.collection("clients").doc(currentClient.id).update(updateData)
+                .then(() => {
+                    showToast('Venda registrada com sucesso!', 'success');
+                    
+                    // Limpar campos e focar na descrição
+                    document.getElementById('add-desc').value = '';
+                    document.getElementById('add-val').value = '';
+                    document.getElementById('add-desc-val').value = '';
+                    document.getElementById('add-qtd').value = '1';
+                    document.getElementById('add-desc').focus();
+                })
+                .catch(error => {
+                    console.error("Erro ao registrar venda:", error);
+                    showToast('Erro ao registrar venda', 'error');
+                });
         }
 
         function addPayment() {
-            const val = parseFloat(document.getElementById('pay-val').value);
-            if(!val) return;
-            const item = { id: Date.now(), date: new Date().toISOString(), desc: "PAGAMENTO", qtd: 1, unit: val, discount: 0, total: -val, type: 'credit' };
-            let trs = currentClient.transactions || []; trs.push(item);
-            db.collection("clients").doc(currentClient.id).update({ transactions: trs });
-            document.getElementById('pay-val').value='';
+            if (!currentClient) {
+                showToast('Selecione um cliente primeiro', 'warning');
+                return;
+            }
+            
+            const paymentValue = parseFloat(document.getElementById('pay-val').value);
+            
+            if (!paymentValue || paymentValue <= 0) {
+                showToast('Informe um valor válido para o pagamento', 'warning');
+                document.getElementById('pay-val').focus();
+                return;
+            }
+            
+            // Criar transação de pagamento
+            const transaction = {
+                id: Date.now(),
+                date: new Date().toISOString(),
+                desc: "PAGAMENTO RECEBIDO",
+                qtd: 1,
+                unit: paymentValue,
+                discount: 0,
+                total: -paymentValue,
+                type: 'credit'
+            };
+            
+            // Atualizar transações do cliente
+            const transactions = currentClient.transactions || [];
+            transactions.push(transaction);
+            
+            // Salvar no Firestore
+            db.collection("clients").doc(currentClient.id).update({ transactions: transactions })
+                .then(() => {
+                    showToast('Pagamento registrado com sucesso!', 'success');
+                    document.getElementById('pay-val').value = '';
+                    document.getElementById('pay-val').focus();
+                })
+                .catch(error => {
+                    console.error("Erro ao registrar pagamento:", error);
+                    showToast('Erro ao registrar pagamento', 'error');
+                });
         }
 
-        function deleteItem(id) { if(confirm("Apagar?")) { let trs = currentClient.transactions.filter(t=>t.id!==id); db.collection("clients").doc(currentClient.id).update({ transactions: trs }); } }
+        function deleteTransaction(transactionId) {
+            if (!confirm('Tem certeza que deseja excluir esta transação?')) {
+                return;
+            }
+            
+            if (!currentClient) return;
+            
+            const transactions = currentClient.transactions.filter(t => t.id !== transactionId);
+            
+            db.collection("clients").doc(currentClient.id).update({ transactions: transactions })
+                .then(() => {
+                    showToast('Transação excluída com sucesso!', 'success');
+                })
+                .catch(error => {
+                    console.error("Erro ao excluir transação:", error);
+                    showToast('Erro ao excluir transação', 'error');
+                });
+        }
 
-        function arquivarCiclo() {
-            if(confirm("Arquivar conta paga?")) {
-                const ciclo = { id: Date.now(), dataArquivamento: new Date().toISOString(), noteNumber: currentClient.activeNoteNumber || '-', itens: [...currentClient.transactions] };
-                let hist = currentClient.history || []; hist.push(ciclo);
-                db.collection("clients").doc(currentClient.id).update({ transactions: [], history: hist, activeNoteNumber: firebase.firestore.FieldValue.delete() }).then(()=>showToast("Arquivado!"));
+        function deleteClient() {
+            if (!currentClient) return;
+            
+            if (!confirm(`Tem certeza que deseja excluir o cliente "${currentClient.nome}"? Esta ação não pode ser desfeita.`)) {
+                return;
+            }
+            
+            db.collection("clients").doc(currentClient.id).delete()
+                .then(() => {
+                    showToast('Cliente excluído com sucesso!', 'success');
+                    navTo('clientes');
+                })
+                .catch(error => {
+                    console.error("Erro ao excluir cliente:", error);
+                    showToast('Erro ao excluir cliente', 'error');
+                });
+        }
+
+        async function getNextNoteNumber() {
+            try {
+                const configRef = db.collection('config').doc('metadata');
+                const doc = await configRef.get();
+                
+                let nextNum = 1;
+                if (doc.exists) {
+                    nextNum = (doc.data().lastNoteNumber || 0) + 1;
+                }
+                
+                await configRef.set({ lastNoteNumber: nextNum }, { merge: true });
+                return nextNum;
+            } catch (error) {
+                console.error("Erro ao gerar número da nota:", error);
+                // Fallback: usar timestamp
+                return Date.now().toString().slice(-6);
             }
         }
 
-        function checkOverdueClients() {
-            let count = 0; localClients.forEach(c => { if(getOverdueData(c)) count++; });
-            const b = document.getElementById('badge-notify'); if(count>0) { b.style.display='inline-block'; b.innerText=count; } else { b.style.display='none'; }
-        }
-        
-        function getOverdueData(c) {
-            const bal = (c.transactions||[]).reduce((a,b)=>a+b.total,0);
-            if(bal <= 0.05 || !c.transactions.length) return null;
+        // ===== NOTIFICAÇÕES E VENCIMENTOS =====
+        function getOverdueData(client) {
+            const balance = (client.transactions || []).reduce((sum, t) => sum + t.total, 0);
             
-            const d1 = new Date(c.transactions[0].date); 
-            
-            // --- MODO OFICIAL (35 DIAS) --- 
-            d1.setDate(d1.getDate()+35); 
-            
-            const now = new Date();
-            if (now > d1) {
-                const diff = Math.ceil((now - d1)/(1000*3600*24));
-                return { days: diff > 0 ? diff : "Recente", amount: bal, date: d1 };
+            // Se não tem débito, não está atrasado
+            if (balance <= 0.05 || !client.transactions || client.transactions.length === 0) {
+                return null;
             }
+            
+            // Encontrar a transação mais antiga de débito
+            const debtTransactions = client.transactions.filter(t => t.total > 0);
+            if (debtTransactions.length === 0) return null;
+            
+            // Ordenar por data (mais antiga primeiro)
+            debtTransactions.sort((a, b) => new Date(a.date) - new Date(b.date));
+            const oldestDebtDate = new Date(debtTransactions[0].date);
+            
+            // Calcular data de vencimento
+            const dueDate = new Date(oldestDebtDate);
+            dueDate.setDate(dueDate.getDate() + systemConfig.diasVencimento);
+            
+            // Verificar se está vencido
+            const today = new Date();
+            if (today > dueDate) {
+                const daysOverdue = Math.ceil((today - dueDate) / (1000 * 60 * 60 * 24));
+                return {
+                    days: daysOverdue,
+                    amount: balance,
+                    dueDate: dueDate
+                };
+            }
+            
             return null;
         }
 
-        // --- RENDERIZAÇÃO SEGURA ---
         function renderNotifications() {
-            const list = document.getElementById('notification-list'); 
-            list.innerHTML=''; 
-            let visibleCount = 0;
+            const notificationList = document.getElementById('notification-list');
             
-            localClients.forEach(c => {
-                try {
-                    const over = getOverdueData(c);
-                    if(over) { 
-                        visibleCount++; 
-                        const cleanTel = c.tel ? String(c.tel).replace(/\D/g,'') : '';
-                        const msg = encodeURIComponent(`Olá ${c.nome}! Aqui é da AgroVida.\n\nEsta é uma mensagem automática do nosso sistema, enviada apenas como lembrete cordial de uma notinha pendente no valor de ${formatCurrency(over.amount)}.\n\nNão é cobrança. Qualquer dúvida, conte conosco! 🌱`);
-                        
-                        let wppBtn = '';
-                        if (cleanTel.length >= 8) {
-                             wppBtn = `<a href="https://wa.me/55${cleanTel}?text=${msg}" target="_blank" class="btn-primary" style="background:#25D366;text-decoration:none; padding:5px 10px; font-size:0.8rem; display:inline-block"><i class="fab fa-whatsapp"></i> Cobrar</a>`;
-                        } else {
-                             wppBtn = `<button class="btn-primary" style="background:#ccc; cursor:not-allowed; padding:5px 10px; font-size:0.8rem; display:inline-block" disabled>Sem Zap</button>`;
-                        }
-
-                        // ELEMENTO DOM SEGURO
-                        const div = document.createElement('div');
-                        div.className = 'alert-card';
-                        div.innerHTML = `
-                            <div>
-                                <h4>${c.nome} (Nota #${c.activeNoteNumber||'?'})</h4>
-                                <small>Vencido há ${over.days} dias</small>
+            // Encontrar clientes atrasados
+            const overdueClients = localClients.filter(client => {
+                return getOverdueData(client) !== null;
+            });
+            
+            if (overdueClients.length === 0) {
+                notificationList.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px; color: var(--text-light);">
+                        <i class="fas fa-check-circle fa-3x mb-20"></i>
+                        <h3>Tudo em dia!</h3>
+                        <p>Nenhum cliente com pagamento atrasado</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Gerar lista de notificações
+            let notificationsHTML = '';
+            
+            overdueClients.forEach(client => {
+                const overdueData = getOverdueData(client);
+                const cleanTel = client.tel ? client.tel.replace(/\D/g, '') : '';
+                const noteNumber = client.activeNoteNumber || '?';
+                
+                // Mensagem para WhatsApp
+                const message = encodeURIComponent(
+                    `Olá ${client.nome}! Aqui é da AgroVida.\n\n` +
+                    `Esta é uma mensagem automática do nosso sistema, enviada apenas como lembrete cordial de uma notinha pendente ` +
+                    `(Nota #${noteNumber}) no valor de ${formatCurrency(overdueData.amount)}.\n\n` +
+                    `Não é cobrança. Qualquer dúvida, conte conosco! 🌱`
+                );
+                
+                // Botão do WhatsApp (se tiver telefone)
+                let whatsappButton = '';
+                if (cleanTel.length >= 10) {
+                    whatsappButton = `
+                        <a href="https://wa.me/55${cleanTel}?text=${message}" target="_blank" class="btn btn-success btn-sm">
+                            <i class="fab fa-whatsapp"></i> Enviar Lembrete
+                        </a>
+                    `;
+                } else {
+                    whatsappButton = `
+                        <button class="btn btn-outline btn-sm" disabled>
+                            <i class="fas fa-phone-slash"></i> Sem Telefone
+                        </button>
+                    `;
+                }
+                
+                notificationsHTML += `
+                    <div class="notification-item">
+                        <div class="notification-content">
+                            <div class="notification-title">${client.nome}</div>
+                            <div class="notification-desc">
+                                Nota #${noteNumber} • Atrasado há ${overdueData.days} dias • 
+                                Valor: ${formatCurrency(overdueData.amount)}
                             </div>
-                            <div style="display:flex; gap:5px; flex-wrap:wrap">
-                                ${wppBtn} 
-                                <button class="btn-primary btn-ver-ficha" style="display:inline-block; font-size:0.8rem; padding:5px 10px;">Ver</button>
-                            </div>`;
-                        
-                        div.querySelector('.btn-ver-ficha').onclick = function() { openClient(c.id); };
-                        list.appendChild(div);
-                    }
-                } catch(err) { console.log("Erro notificação", err); }
+                        </div>
+                        <div class="notification-actions">
+                            ${whatsappButton}
+                            <button class="btn btn-primary btn-sm" onclick="openClient('${client.id}')">
+                                <i class="fas fa-eye"></i> Ver Detalhes
+                            </button>
+                        </div>
+                    </div>
+                `;
             });
             
-            if(visibleCount === 0) list.innerHTML = '<p style="text-align:center;color:#999;margin-top:20px">Ninguém atrasado.</p>';
+            notificationList.innerHTML = notificationsHTML;
         }
 
-        function abrirModalPrint(tipo) { tipoImpressaoAtual=tipo; document.getElementById('modal-print-overlay').style.display='flex'; }
-        function abrirHistorico() {
-            const list = document.getElementById('history-list'); list.innerHTML='';
-            if(!currentClient.history || !currentClient.history.length) return list.innerHTML='<p style="text-align:center;color:#999">Vazio</p>';
-            [...currentClient.history].reverse().forEach((h, i) => {
-                list.innerHTML += `<div class="history-item"><div class="history-header"><span>Data: ${new Date(h.dataArquivamento).toLocaleDateString()} - Nota #${h.noteNumber||'?'}</span><button onclick="document.getElementById('h${i}').classList.toggle('show')" style="border:none;background:none;color:var(--primary)">Ver</button></div><div id="h${i}" class="history-detail"><ul style="padding-left:15px;margin:0">${h.itens.map(x=>`<li>${x.qtd}x ${x.desc} (${formatCurrency(x.total)})</li>`).join('')}</ul><button class="btn-primary" style="width:100%;margin-top:10px;font-size:0.8rem" onclick="imprimirHistorico(${h.id})">Imprimir</button></div></div>`;
-            });
-            document.getElementById('modal-history-overlay').style.display='flex';
-        }
-        function imprimirHistorico(id) { tipoImpressaoAtual='historico'; dadosImpressaoTemp = currentClient.history.find(h=>h.id===id); document.getElementById('modal-print-overlay').style.display='flex'; }
-        
-        function executarImpressao(papel) {
-            document.getElementById('modal-print-overlay').style.display='none';
-            const area = document.getElementById('area-impressao');
-            let trs = [], title="", bal=0, notaNum = "";
+        // ===== HISTÓRICO E ARQUIVAMENTO =====
+        function arquivarCiclo() {
+            if (!currentClient) return;
             
-            if(tipoImpressaoAtual==='historico') { 
-                trs=dadosImpressaoTemp.itens; title="HISTÓRICO"; notaNum = dadosImpressaoTemp.noteNumber || "-";
-            } else { 
-                trs=currentClient.transactions; bal=trs.reduce((a,b)=>a+b.total,0); title=tipoImpressaoAtual==='extrato'?"EXTRATO":"RECIBO"; notaNum = currentClient.activeNoteNumber || "NOVA";
+            const balance = (currentClient.transactions || []).reduce((sum, t) => sum + t.total, 0);
+            
+            if (Math.abs(balance) > 0.05) {
+                showToast('Não é possível arquivar: cliente ainda possui saldo pendente', 'warning');
+                return;
             }
             
-            const gerarVia = (nm) => {
-                let rows = trs.map(t=>`<tr><td>${t.qtd}x ${t.desc}</td><td class="text-right">${Math.abs(t.total).toFixed(2)}</td></tr>`).join('');
-                const css = papel==='bobina'?'estilo-bobina':'estilo-a4';
-                return `<div class="via-impressao ${css}"><center><h3>AGROVIDA MAIS</h3><p>${title} Nº ${notaNum}</p><small>${nm}</small></center><hr><p>${currentClient.nome}</p><p>${new Date().toLocaleString()}</p><hr><table>${rows}</table><hr><h3 style="text-align:right">TOTAL: ${formatCurrency(bal)}</h3>${nm.includes('LOJA') ? '<br><br><div class="assinatura-box"><div class="assinatura-linha">Assinatura Cliente</div></div>' : ''}</div>`;
+            if (!confirm('Deseja arquivar este ciclo de compras?')) {
+                return;
+            }
+            
+            // Criar registro no histórico
+            const ciclo = {
+                id: Date.now(),
+                dataArquivamento: new Date().toISOString(),
+                noteNumber: currentClient.activeNoteNumber || '-',
+                itens: [...currentClient.transactions]
             };
+            
+            // Adicionar ao histórico e limpar transações atuais
+            const history = currentClient.history || [];
+            history.push(ciclo);
+            
+            db.collection("clients").doc(currentClient.id).update({
+                transactions: [],
+                history: history,
+                activeNoteNumber: firebase.firestore.FieldValue.delete()
+            })
+            .then(() => {
+                showToast('Ciclo arquivado com sucesso!', 'success');
+            })
+            .catch(error => {
+                console.error("Erro ao arquivar ciclo:", error);
+                showToast('Erro ao arquivar ciclo', 'error');
+            });
+        }
 
-            if(tipoImpressaoAtual==='recibo') {
-                const css = papel==='bobina'?'estilo-bobina':'recibo-quitacao';
-                const reciboHtml = `<div class="via-impressao ${css}"><center><h3>AGROVIDA MAIS</h3><br><h2>RECIBO</h2><p>Nota Ref: #${notaNum}</p></center><br><p style="text-align:justify">Declaramos que <strong>${currentClient.nome}</strong> (CPF: ${currentClient.cpf||'-'}) realizou a quitação total de seus débitos.</p><br><br><div class="assinatura-box"><div class="assinatura-linha">Assinatura</div></div></div>`;
-                area.innerHTML = reciboHtml + '<div class="corte-linha"></div>' + reciboHtml; 
+        function abrirHistorico() {
+            if (!currentClient) return;
+            
+            const historyList = document.getElementById('history-list');
+            const history = currentClient.history || [];
+            
+            if (history.length === 0) {
+                historyList.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px; color: var(--text-light);">
+                        <i class="fas fa-history fa-3x mb-20"></i>
+                        <p>Nenhum histórico encontrado</p>
+                    </div>
+                `;
             } else {
-                area.innerHTML = gerarVia("VIA DA LOJA") + '<div class="corte-linha"></div>' + gerarVia("VIA DO CLIENTE"); 
+                let historyHTML = '';
+                
+                // Ordenar do mais recente para o mais antigo
+                [...history].reverse().forEach((record, index) => {
+                    const date = new Date(record.dataArquivamento).toLocaleDateString('pt-BR');
+                    const total = record.itens.reduce((sum, item) => sum + item.total, 0);
+                    
+                    // Gerar lista de itens
+                    let itemsHTML = '';
+                    record.itens.forEach(item => {
+                        itemsHTML += `
+                            <li style="margin-bottom: 5px; padding: 5px 0; border-bottom: 1px solid #eee;">
+                                ${item.qtd}x ${item.desc} - ${formatCurrency(item.total)}
+                                <small style="color: #999; display: block;">${new Date(item.date).toLocaleDateString('pt-BR')}</small>
+                            </li>
+                        `;
+                    });
+                    
+                    historyHTML += `
+                        <div class="card mb-10">
+                            <div class="card-header">
+                                <h4 style="margin: 0;">Ciclo #${history.length - index} - Nota ${record.noteNumber}</h4>
+                                <small style="color: var(--text-light);">Arquivado em: ${date}</small>
+                            </div>
+                            <div style="padding: 15px;">
+                                <ul style="padding-left: 20px; margin: 0;">
+                                    ${itemsHTML}
+                                </ul>
+                                <div style="font-weight: bold; margin-top: 10px; text-align: right;">
+                                    Total: ${formatCurrency(total)}
+                                </div>
+                                <button class="btn btn-outline btn-sm w-100 mt-10" onclick="imprimirHistorico(${record.id})">
+                                    <i class="fas fa-print"></i> Imprimir Histórico
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                historyList.innerHTML = historyHTML;
             }
+            
+            // Abrir modal
+            document.getElementById('modal-history-overlay').style.display = 'flex';
+        }
+
+        function imprimirHistorico(recordId) {
+            if (!currentClient) return;
+            
+            const record = currentClient.history.find(h => h.id === recordId);
+            if (!record) return;
+            
+            tipoImpressaoAtual = 'historico';
+            dadosImpressaoTemp = record;
+            
+            // Fechar modal do histórico
+            closeModal('modal-history-overlay');
+            
+            // Abrir modal de impressão
+            document.getElementById('modal-print-overlay').style.display = 'flex';
+        }
+
+        // ===== IMPRESSÃO =====
+        function abrirModalPrint(tipo) {
+            if (!currentClient) {
+                showToast('Selecione um cliente primeiro', 'warning');
+                return;
+            }
+            
+            // Verificar se pode gerar recibo (saldo zerado)
+            if (tipo === 'recibo') {
+                const balance = (currentClient.transactions || []).reduce((sum, t) => sum + t.total, 0);
+                if (Math.abs(balance) > 0.05) {
+                    showToast('Só é possível gerar recibo quando o saldo estiver zerado', 'warning');
+                    return;
+                }
+            }
+            
+            tipoImpressaoAtual = tipo;
+            document.getElementById('modal-print-overlay').style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function executarImpressao(formato) {
+            // Fechar modal
+            closeModal('modal-print-overlay');
+            
+            // Preparar dados para impressão
+            const areaImpressao = document.getElementById('print-area');
+            let conteudoImpressao = '';
+            
+            if (tipoImpressaoAtual === 'historico') {
+                // Imprimir histórico
+                const record = dadosImpressaoTemp;
+                const total = record.itens.reduce((sum, item) => sum + item.total, 0);
+                const date = new Date(record.dataArquivamento).toLocaleDateString('pt-BR');
+                
+                conteudoImpressao = `
+                    <div class="${formato === 'bobina' ? 'receipt' : 'receipt-a4'}">
+                        <div class="receipt-copy">
+                            <center>
+                                <h2>AGROVIDA MAIS</h2>
+                                <p><strong>HISTÓRICO - NOTA #${record.noteNumber}</strong></p>
+                                <p>Cliente: ${currentClient.nome}</p>
+                                <p>Data do Arquivamento: ${date}</p>
+                            </center>
+                            <hr>
+                            <table style="width: 100%; margin: 15px 0;">
+                                ${record.itens.map(item => `
+                                    <tr>
+                                        <td>${item.qtd}x ${item.desc}</td>
+                                        <td style="text-align: right;">${formatCurrency(item.total)}</td>
+                                    </tr>
+                                `).join('')}
+                            </table>
+                            <hr>
+                            <h3 style="text-align: right;">TOTAL: ${formatCurrency(total)}</h3>
+                            <div style="margin-top: 40px; text-align: center;">
+                                ________________________________
+                                <div>Assinatura</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (tipoImpressaoAtual === 'recibo') {
+                // Gerar recibo de quitação
+                const noteNumber = currentClient.activeNoteNumber || '--';
+                const hoje = new Date().toLocaleDateString('pt-BR');
+                
+                conteudoImpressao = `
+                    <div class="${formato === 'bobina' ? 'receipt' : 'receipt-a4'}">
+                        <div class="receipt-copy">
+                            <center>
+                                <h2>AGROVIDA MAIS</h2>
+                                <h1>RECIBO</h1>
+                                <p>Referência: Nota #${noteNumber}</p>
+                                <p>Data: ${hoje}</p>
+                            </center>
+                            <br>
+                            <p style="text-align: justify;">
+                                Declaramos que <strong>${currentClient.nome}</strong> 
+                                ${currentClient.cpf ? `(CPF: ${currentClient.cpf})` : ''} 
+                                realizou a quitação total de seus débitos conosco.
+                            </p>
+                            <br><br>
+                            <div style="margin-top: 60px; text-align: center;">
+                                ________________________________
+                                <div>Assinatura</div>
+                            </div>
+                        </div>
+                        <div class="cut-line"></div>
+                        <div class="receipt-copy">
+                            <center>
+                                <h2>AGROVIDA MAIS</h2>
+                                <h1>RECIBO</h1>
+                                <p>Referência: Nota #${noteNumber}</p>
+                                <p>Data: ${hoje}</p>
+                            </center>
+                            <br>
+                            <p style="text-align: justify;">
+                                Declaramos que <strong>${currentClient.nome}</strong> 
+                                ${currentClient.cpf ? `(CPF: ${currentClient.cpf})` : ''} 
+                                realizou a quitação total de seus débitos conosco.
+                            </p>
+                            <br><br>
+                            <div style="margin-top: 60px; text-align: center;">
+                                ________________________________
+                                <div>Assinatura</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Imprimir extrato
+                const transactions = currentClient.transactions || [];
+                const balance = transactions.reduce((sum, t) => sum + t.total, 0);
+                const noteNumber = currentClient.activeNoteNumber || '--';
+                const hoje = new Date().toLocaleString('pt-BR');
+                
+                // Gerar conteúdo da via da loja
+                const viaLoja = `
+                    <div class="receipt-copy">
+                        <center>
+                            <h2>AGROVIDA MAIS</h2>
+                            <p><strong>EXTRATO - NOTA #${noteNumber}</strong></p>
+                            <p>Cliente: ${currentClient.nome}</p>
+                            <p>Data: ${hoje}</p>
+                        </center>
+                        <hr>
+                        <table style="width: 100%; margin: 15px 0;">
+                            ${transactions.map(t => `
+                                <tr>
+                                    <td>${t.qtd}x ${t.desc}</td>
+                                    <td style="text-align: right;">${formatCurrency(t.total)}</td>
+                                </tr>
+                            `).join('')}
+                        </table>
+                        <hr>
+                        <h3 style="text-align: right;">SALDO: ${formatCurrency(balance)}</h3>
+                        <div style="margin-top: 40px; text-align: center;">
+                            ________________________________
+                            <div>Assinatura do Cliente</div>
+                        </div>
+                    </div>
+                `;
+                
+                // Gerar conteúdo da via do cliente
+                const viaCliente = `
+                    <div class="receipt-copy">
+                        <center>
+                            <h2>AGROVIDA MAIS</h2>
+                            <p><strong>EXTRATO - NOTA #${noteNumber}</strong></p>
+                            <p>Cliente: ${currentClient.nome}</p>
+                            <p>Data: ${hoje}</p>
+                        </center>
+                        <hr>
+                        <table style="width: 100%; margin: 15px 0;">
+                            ${transactions.map(t => `
+                                <tr>
+                                    <td>${t.qtd}x ${t.desc}</td>
+                                    <td style="text-align: right;">${formatCurrency(t.total)}</td>
+                                </tr>
+                            `).join('')}
+                        </table>
+                        <hr>
+                        <h3 style="text-align: right;">SALDO: ${formatCurrency(balance)}</h3>
+                        <p style="text-align: center; margin-top: 40px; font-size: 0.9em;">
+                            Este é o seu extrato de compras. Guarde-o para conferência.
+                        </p>
+                    </div>
+                `;
+                
+                conteudoImpressao = `
+                    <div class="${formato === 'bobina' ? 'receipt' : 'receipt-a4'}">
+                        ${viaLoja}
+                        <div class="cut-line"></div>
+                        ${viaCliente}
+                    </div>
+                `;
+            }
+            
+            // Atualizar área de impressão e imprimir
+            areaImpressao.innerHTML = conteudoImpressao;
             window.print();
         }
 
-        document.addEventListener('keydown', e => {
-            if(e.key==='Enter' && e.target.classList.contains('input-next')) {
-                e.preventDefault();
-                if(e.target.id==='search-client') document.activeElement.blur(); 
-                else if(e.target.id==='add-desc-val' || (e.target.id==='add-val' && !document.getElementById('add-desc-val').value)) addItem();
-                else if(e.target.id==='pay-val') addPayment();
-                else { const all = [...document.querySelectorAll('.view-section.active .input-next')]; const idx = all.indexOf(e.target); if(idx>-1 && idx<all.length-1) all[idx+1].focus(); }
+        // ===== SHORTCUTS DE TECLADO =====
+        document.addEventListener('keydown', function(event) {
+            // Atalho para buscar (Ctrl+F ou Cmd+F)
+            if ((event.ctrlKey || event.metaKey) && event.key === 'f') {
+                event.preventDefault();
+                
+                if (document.getElementById('view-dashboard').classList.contains('active')) {
+                    document.getElementById('dashboard-search').focus();
+                } else if (document.getElementById('view-clientes').classList.contains('active')) {
+                    document.getElementById('search-client').focus();
+                }
+            }
+            
+            // Atalho para novo cliente (Ctrl+N ou Cmd+N)
+            if ((event.ctrlKey || event.metaKey) && event.key === 'n') {
+                event.preventDefault();
+                novoCadastro();
+            }
+            
+            // Atalho para voltar (Escape)
+            if (event.key === 'Escape') {
+                const activeModal = document.querySelector('.modal-overlay[style*="display: flex"]');
+                if (activeModal) {
+                    activeModal.style.display = 'none';
+                } else if (document.getElementById('view-detalhe').classList.contains('active')) {
+                    navTo('clientes');
+                } else if (!document.getElementById('view-dashboard').classList.contains('active')) {
+                    navTo('dashboard');
+                }
+            }
+            
+            // Navegação entre campos com Enter
+            if (event.key === 'Enter' && event.target.classList.contains('form-control')) {
+                event.preventDefault();
+                
+                // Encontrar todos os campos do formulário ativo
+                const activeSection = document.querySelector('.view-section.active');
+                const inputs = Array.from(activeSection.querySelectorAll('.form-control'));
+                const currentIndex = inputs.indexOf(event.target);
+                
+                // Se não for o último campo, focar no próximo
+                if (currentIndex < inputs.length - 1) {
+                    inputs[currentIndex + 1].focus();
+                }
             }
         });
+
+        // ===== INICIALIZAÇÃO FINAL =====
+        // Focar no primeiro campo do PIN ao carregar a página
+        window.onload = function() {
+            document.getElementById('pin-1').focus();
+        };
+
+        // Fechar resultados da pesquisa ao clicar fora
+        document.addEventListener('click', function(event) {
+            const searchContainer = document.querySelector('.dashboard-search-container');
+            const searchResults = document.getElementById('dashboard-search-results');
+            
+            if (searchContainer && searchResults && !searchContainer.contains(event.target)) {
+                searchResults.style.display = 'none';
+            }
+        });
+
     </script>
 </body>
 </html>
