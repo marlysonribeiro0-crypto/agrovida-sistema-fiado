@@ -1444,6 +1444,31 @@
         .gap-10 { gap: 10px; }
         .gap-15 { gap: 15px; }
         .gap-20 { gap: 20px; }
+
+        /* ===== FILTRO DE BUSCA ===== */
+        #search-type {
+            background: transparent;
+            border: none;
+            padding: 8px;
+            color: var(--text);
+            font-weight: 500;
+            cursor: pointer;
+            outline: none;
+            min-width: 100px;
+            border-right: 1px solid var(--border);
+            margin-right: 10px;
+        }
+
+        #search-type:focus {
+            background: var(--bg);
+        }
+
+        @media (max-width: 576px) {
+            #search-type {
+                min-width: 80px;
+                font-size: 0.9rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1664,7 +1689,17 @@
             
             <div class="search-container">
                 <i class="fas fa-search search-icon"></i>
-                <input type="text" class="search-input" id="search-client" placeholder="Buscar cliente por nome, CPF, cidade ou número da nota..." onkeyup="renderClients()">
+                <select id="search-type" style="padding: 8px; border: none; background: transparent; color: var(--text);">
+                    <option value="all">Tudo</option>
+                    <option value="name">Nome</option>
+                    <option value="cpf">CPF</option>
+                    <option value="note">Nº Nota</option>
+                    <option value="tel">Telefone</option>
+                    <option value="city">Cidade</option>
+                </select>
+                <input type="text" class="search-input" id="search-client" 
+                       placeholder="Buscar cliente..." 
+                       onkeyup="renderClients()">
             </div>
             
             <div class="table-container">
@@ -2771,17 +2806,41 @@
 
         function renderClients() {
             const searchTerm = document.getElementById('search-client').value.toLowerCase();
+            const searchType = document.getElementById('search-type').value;
             const tbody = document.getElementById('clientes-list');
             
             // Filtrar clientes
             const filteredClients = localClients.filter(client => {
-                return (
-                    client.nome.toLowerCase().includes(searchTerm) ||
-                    (client.cpf && client.cpf.includes(searchTerm)) ||
-                    (client.cidade && client.cidade.toLowerCase().includes(searchTerm)) ||
-                    (client.tel && client.tel.includes(searchTerm)) ||
-                    (client.activeNoteNumber && client.activeNoteNumber.toString().includes(searchTerm))
-                );
+                if (!searchTerm) return true;
+                
+                switch(searchType) {
+                    case 'name':
+                        return client.nome.toLowerCase().includes(searchTerm);
+                        
+                    case 'cpf':
+                        return client.cpf && client.cpf.includes(searchTerm);
+                        
+                    case 'note':
+                        return client.activeNoteNumber && 
+                               client.activeNoteNumber.toString().toLowerCase().includes(searchTerm);
+                        
+                    case 'tel':
+                        return client.tel && client.tel.includes(searchTerm);
+                        
+                    case 'city':
+                        return client.cidade && 
+                               client.cidade.toLowerCase().includes(searchTerm);
+                        
+                    default: // 'all' - busca em todos os campos
+                        return (
+                            client.nome.toLowerCase().includes(searchTerm) ||
+                            (client.cpf && client.cpf.includes(searchTerm)) ||
+                            (client.activeNoteNumber && 
+                             client.activeNoteNumber.toString().toLowerCase().includes(searchTerm)) ||
+                            (client.tel && client.tel.includes(searchTerm)) ||
+                            (client.cidade && client.cidade.toLowerCase().includes(searchTerm))
+                        );
+                }
             });
             
             // Ordenar por saldo (maior para menor)
@@ -2800,7 +2859,7 @@
                         <td colspan="6" style="text-align: center; padding: 40px 20px;">
                             <i class="fas fa-users fa-2x mb-10" style="color: var(--text-light);"></i>
                             <p style="color: var(--text-light);">Nenhum cliente encontrado</p>
-                            ${searchTerm ? '<button class="btn btn-sm btn-outline mt-10" onclick="document.getElementById(\'search-client\').value=\'\'; renderClients()">Limpar busca</button>' : ''}
+                            ${searchTerm ? '<button class="btn btn-sm btn-outline mt-10" onclick="clearClientSearch()">Limpar busca</button>' : ''}
                         </td>
                     </tr>
                 `;
@@ -2821,7 +2880,7 @@
                         }
                     }
                     
-                    // Número da nota
+                    // Número da nota (agora fixo)
                     const noteNumber = client.activeNoteNumber ? `#${client.activeNoteNumber}` : '-';
                     
                     tableHTML += `
@@ -2853,6 +2912,12 @@
             // Atualizar contador
             document.getElementById('clients-count').textContent = 
                 `${filteredClients.length} ${filteredClients.length === 1 ? 'cliente encontrado' : 'clientes encontrados'}`;
+        }
+
+        function clearClientSearch() {
+            document.getElementById('search-client').value = '';
+            document.getElementById('search-type').value = 'all';
+            renderClients();
         }
 
         function openClient(clientId) {
@@ -2994,10 +3059,11 @@
             // Calcular total
             const total = (qtd * val) - descVal;
             
-            // Gerar número da nota se necessário
+            // Verificar se o cliente já tem um número de nota
             let noteNumber = currentClient.activeNoteNumber;
             
-            if (!noteNumber && (!currentClient.transactions || currentClient.transactions.length === 0)) {
+            // Só gera novo número se o cliente NÃO tiver nenhum ainda
+            if (!noteNumber) {
                 if (currentClient.nome.toUpperCase().includes("TESTE")) {
                     noteNumber = "TESTE-00";
                 } else {
@@ -3022,7 +3088,9 @@
             transactions.push(transaction);
             
             const updateData = { transactions: transactions };
-            if (noteNumber) {
+            
+            // Atualiza o número da nota apenas se for novo
+            if (noteNumber !== currentClient.activeNoteNumber) {
                 updateData.activeNoteNumber = noteNumber;
             }
             
@@ -3042,6 +3110,25 @@
                     console.error("Erro ao registrar venda:", error);
                     showToast('Erro ao registrar venda', 'error');
                 });
+        }
+
+        async function getNextNoteNumber() {
+            try {
+                const configRef = db.collection('config').doc('metadata');
+                const doc = await configRef.get();
+                
+                let nextNum = 1;
+                if (doc.exists) {
+                    nextNum = (doc.data().lastNoteNumber || 0) + 1;
+                }
+                
+                await configRef.set({ lastNoteNumber: nextNum }, { merge: true });
+                return nextNum;
+            } catch (error) {
+                console.error("Erro ao gerar número da nota:", error);
+                // Fallback: usar timestamp
+                return Date.now().toString().slice(-6);
+            }
         }
 
         function addPayment() {
@@ -3122,25 +3209,6 @@
                     console.error("Erro ao excluir cliente:", error);
                     showToast('Erro ao excluir cliente', 'error');
                 });
-        }
-
-        async function getNextNoteNumber() {
-            try {
-                const configRef = db.collection('config').doc('metadata');
-                const doc = await configRef.get();
-                
-                let nextNum = 1;
-                if (doc.exists) {
-                    nextNum = (doc.data().lastNoteNumber || 0) + 1;
-                }
-                
-                await configRef.set({ lastNoteNumber: nextNum }, { merge: true });
-                return nextNum;
-            } catch (error) {
-                console.error("Erro ao gerar número da nota:", error);
-                // Fallback: usar timestamp
-                return Date.now().toString().slice(-6);
-            }
         }
 
         // ===== NOTIFICAÇÕES E VENCIMENTOS =====
@@ -3275,13 +3343,14 @@
             };
             
             // Adicionar ao histórico e limpar transações atuais
+            // MAS MANTÉM O NÚMERO DA NOTA!
             const history = currentClient.history || [];
             history.push(ciclo);
             
             db.collection("clients").doc(currentClient.id).update({
                 transactions: [],
-                history: history,
-                activeNoteNumber: firebase.firestore.FieldValue.delete()
+                history: history
+                // NÃO remove activeNoteNumber - fica fixo para o cliente
             })
             .then(() => {
                 showToast('Ciclo arquivado com sucesso!', 'success');
@@ -3553,6 +3622,48 @@
             // Atualizar área de impressão e imprimir
             areaImpressao.innerHTML = conteudoImpressao;
             window.print();
+        }
+
+        // ===== MIGRAÇÃO DE CLIENTES (OPCIONAL) =====
+        async function migrateExistingClients() {
+            if (!confirm('Esta ação irá atribuir números de nota fixos para todos os clientes. Continuar?')) {
+                return;
+            }
+            
+            showLoading(true);
+            
+            try {
+                const clientsSnapshot = await db.collection("clients").get();
+                const batch = db.batch();
+                let noteCounter = 1;
+                
+                clientsSnapshot.forEach(doc => {
+                    const clientData = doc.data();
+                    
+                    // Só atribui número se não tiver já
+                    if (!clientData.activeNoteNumber) {
+                        batch.update(doc.ref, { 
+                            activeNoteNumber: noteCounter 
+                        });
+                        noteCounter++;
+                    }
+                });
+                
+                // Atualizar o contador global
+                const configRef = db.collection('config').doc('metadata');
+                batch.set(configRef, { 
+                    lastNoteNumber: noteCounter 
+                }, { merge: true });
+                
+                await batch.commit();
+                showToast('Migração concluída com sucesso!', 'success');
+                showLoading(false);
+                
+            } catch (error) {
+                console.error("Erro na migração:", error);
+                showToast('Erro na migração', 'error');
+                showLoading(false);
+            }
         }
 
         // ===== SHORTCUTS DE TECLADO =====
