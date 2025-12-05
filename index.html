@@ -679,6 +679,15 @@
             box-shadow: 0 10px 25px var(--shadow-hover);
         }
 
+        .stats-card.clickable {
+            cursor: pointer;
+        }
+
+        .stats-card.clickable:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px var(--shadow-hover);
+        }
+
         .stats-icon {
             width: 60px;
             height: 60px;
@@ -1026,6 +1035,41 @@
             font-size: 1rem;
             margin-left: 10px;
             background: transparent;
+            color: var(--text);
+        }
+
+        /* ===== FILTROS DE DATA ===== */
+        .date-filter-container {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: 0 5px 15px var(--shadow);
+        }
+
+        .date-filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .date-filter-label {
+            font-weight: 600;
+            color: var(--secondary);
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .date-filter-input {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            background: var(--white);
             color: var(--text);
         }
 
@@ -1469,6 +1513,10 @@
                 <i class="fas fa-users"></i> Clientes
             </a>
             
+            <a id="menu-pagamentos" class="menu-item" onclick="navTo('pagamentos')">
+                <i class="fas fa-hand-holding-usd"></i> Pagamentos
+            </a>
+            
             <a id="menu-cadastro" class="menu-item" onclick="novoCadastro()">
                 <i class="fas fa-user-plus"></i> Novo Cadastro
             </a>
@@ -1515,7 +1563,7 @@
             </div>
             
             <div class="dashboard-grid">
-                <div class="stats-card">
+                <div class="stats-card clickable" onclick="navTo('clientes')">
                     <div class="stats-icon" style="background: rgba(231, 76, 60, 0.1); color: var(--danger);">
                         <i class="fas fa-file-invoice-dollar"></i>
                     </div>
@@ -1525,7 +1573,7 @@
                     </div>
                 </div>
                 
-                <div class="stats-card">
+                <div class="stats-card clickable" onclick="navTo('clientes')">
                     <div class="stats-icon" style="background: rgba(52, 152, 219, 0.1); color: var(--info);">
                         <i class="fas fa-users"></i>
                     </div>
@@ -1535,17 +1583,20 @@
                     </div>
                 </div>
                 
-                <div class="stats-card">
+                <div class="stats-card clickable" onclick="navTo('pagamentos')">
                     <div class="stats-icon" style="background: rgba(46, 204, 113, 0.1); color: var(--success);">
                         <i class="fas fa-hand-holding-usd"></i>
                     </div>
                     <div class="stats-content">
                         <div class="stats-label">PAGOS HOJE</div>
                         <div class="stats-value" id="dash-pagos-hoje">R$ 0,00</div>
+                        <div class="stats-trend">
+                            <span>Clique para ver detalhes</span>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="stats-card">
+                <div class="stats-card clickable" onclick="navTo('notifications')">
                     <div class="stats-icon" style="background: rgba(243, 156, 18, 0.1); color: var(--warning);">
                         <i class="fas fa-exclamation-triangle"></i>
                     </div>
@@ -1636,6 +1687,61 @@
             
             <div class="text-center mt-20">
                 <div class="badge badge-info" id="clients-count">0 clientes encontrados</div>
+            </div>
+        </section>
+
+        <!-- Pagamentos -->
+        <section id="view-pagamentos" class="view-section">
+            <div class="page-header">
+                <div class="page-title">
+                    <div class="icon"><i class="fas fa-hand-holding-usd"></i></div>
+                    <span>Pagamentos Recebidos</span>
+                </div>
+                <div class="page-actions">
+                    <button class="btn btn-outline" onclick="gerarRelatorioPagamentos()">
+                        <i class="fas fa-file-export"></i> Exportar Relatório
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Filtros de Data -->
+            <div class="date-filter-container">
+                <div class="date-filter-group">
+                    <label class="date-filter-label">Data:</label>
+                    <input type="date" id="filter-data" class="date-filter-input" value="<?php echo date('Y-m-d'); ?>">
+                    <button class="btn btn-sm btn-primary" onclick="filtrarPagamentos()">
+                        <i class="fas fa-filter"></i> Filtrar
+                    </button>
+                    <button class="btn btn-sm btn-outline" onclick="resetarFiltroData()">
+                        <i class="fas fa-redo"></i> Hoje
+                    </button>
+                </div>
+                
+                <div style="margin-left: auto; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-weight: 600; color: var(--success);" id="total-pagamentos-dia">Total do dia: R$ 0,00</span>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Hora</th>
+                            <th>Cliente</th>
+                            <th>Nota</th>
+                            <th>Valor</th>
+                            <th>Forma</th>
+                            <th style="width: 60px;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pagamentos-list">
+                        <!-- Pagamentos serão carregados aqui -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="text-center mt-20">
+                <div class="badge badge-success" id="pagamentos-count">0 pagamentos encontrados</div>
             </div>
         </section>
 
@@ -1945,6 +2051,10 @@
             if (savedConfig) {
                 systemConfig = JSON.parse(savedConfig);
             }
+            
+            // Configurar data de hoje como padrão
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('filter-data').value = hoje;
         });
 
         // ===== FUNÇÕES DE UTILIDADE =====
@@ -2256,6 +2366,10 @@
                     renderNotifications();
                     break;
                     
+                case 'pagamentos':
+                    filtrarPagamentos();
+                    break;
+                    
                 case 'dashboard':
                     updateDashboard();
                     setTimeout(() => {
@@ -2280,6 +2394,11 @@
                 renderClients();
             }
             
+            // Atualizar pagamentos se a tela estiver ativa
+            if (document.getElementById('view-pagamentos').classList.contains('active')) {
+                filtrarPagamentos();
+            }
+            
             // Atualizar detalhes do cliente se a tela estiver ativa
             if (document.getElementById('view-detalhe').classList.contains('active') && currentClient) {
                 const updatedClient = localClients.find(c => c.id === currentClient.id);
@@ -2300,6 +2419,8 @@
             let totalPagosHoje = 0;
             let clientesAtrasados = 0;
             
+            const hoje = new Date().toISOString().split('T')[0];
+            
             localClients.forEach(client => {
                 const balance = (client.transactions || []).reduce((sum, transaction) => sum + transaction.total, 0);
                 
@@ -2313,8 +2434,7 @@
                     }
                 }
                 
-                // Calcular pagos hoje (simulação)
-                const hoje = new Date().toISOString().split('T')[0];
+                // Calcular pagos hoje
                 const pagamentosHoje = (client.transactions || []).filter(t => 
                     t.type === 'credit' && t.date.includes(hoje)
                 ).reduce((sum, t) => sum + Math.abs(t.total), 0);
@@ -2336,6 +2456,186 @@
             } else {
                 notifyBadge.style.display = 'none';
             }
+        }
+
+        // ===== PAGAMENTOS =====
+        function filtrarPagamentos() {
+            const dataSelecionada = document.getElementById('filter-data').value;
+            const hoje = new Date().toISOString().split('T')[0];
+            const dataFiltro = dataSelecionada || hoje;
+            
+            // Coletar todos os pagamentos da data selecionada
+            let pagamentosDoDia = [];
+            let totalPagamentos = 0;
+            
+            localClients.forEach(client => {
+                const pagamentosCliente = (client.transactions || []).filter(t => 
+                    t.type === 'credit' && t.date.includes(dataFiltro)
+                );
+                
+                pagamentosCliente.forEach(pagamento => {
+                    pagamentosDoDia.push({
+                        clienteId: client.id,
+                        clienteNome: client.nome,
+                        nota: client.activeNoteNumber || '--',
+                        data: pagamento.date,
+                        descricao: pagamento.desc,
+                        valor: Math.abs(pagamento.total),
+                        hora: new Date(pagamento.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+                    });
+                    
+                    totalPagamentos += Math.abs(pagamento.total);
+                });
+            });
+            
+            // Ordenar por hora (mais recente primeiro)
+            pagamentosDoDia.sort((a, b) => new Date(b.data) - new Date(a.data));
+            
+            // Atualizar tabela
+            const tbody = document.getElementById('pagamentos-list');
+            
+            if (pagamentosDoDia.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px 20px;">
+                            <i class="fas fa-hand-holding-usd fa-2x mb-10" style="color: var(--text-light);"></i>
+                            <p style="color: var(--text-light);">Nenhum pagamento encontrado para esta data</p>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                let tableHTML = '';
+                
+                pagamentosDoDia.forEach((pagamento, index) => {
+                    tableHTML += `
+                        <tr>
+                            <td>${pagamento.hora}</td>
+                            <td>
+                                <div style="font-weight: 600;">${pagamento.clienteNome}</div>
+                            </td>
+                            <td><strong>${pagamento.nota}</strong></td>
+                            <td style="font-weight: 700; color: var(--success);">
+                                ${formatCurrency(pagamento.valor)}
+                            </td>
+                            <td>
+                                <span class="badge badge-success">Dinheiro</span>
+                            </td>
+                            <td>
+                                <div class="table-actions">
+                                    <button class="btn btn-sm btn-outline" onclick="openClient('${pagamento.clienteId}')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                tbody.innerHTML = tableHTML;
+            }
+            
+            // Atualizar totais
+            document.getElementById('total-pagamentos-dia').textContent = 
+                `Total do dia: ${formatCurrency(totalPagamentos)}`;
+            
+            document.getElementById('pagamentos-count').textContent = 
+                `${pagamentosDoDia.length} ${pagamentosDoDia.length === 1 ? 'pagamento encontrado' : 'pagamentos encontrados'}`;
+        }
+
+        function resetarFiltroData() {
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('filter-data').value = hoje;
+            filtrarPagamentos();
+        }
+
+        function gerarRelatorioPagamentos() {
+            const dataSelecionada = document.getElementById('filter-data').value;
+            const hoje = new Date().toISOString().split('T')[0];
+            const dataFiltro = dataSelecionada || hoje;
+            
+            // Coletar todos os pagamentos da data selecionada
+            let pagamentosDoDia = [];
+            let totalPagamentos = 0;
+            
+            localClients.forEach(client => {
+                const pagamentosCliente = (client.transactions || []).filter(t => 
+                    t.type === 'credit' && t.date.includes(dataFiltro)
+                );
+                
+                pagamentosCliente.forEach(pagamento => {
+                    pagamentosDoDia.push({
+                        clienteNome: client.nome,
+                        nota: client.activeNoteNumber || '--',
+                        data: pagamento.date,
+                        valor: Math.abs(pagamento.total),
+                        hora: new Date(pagamento.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+                    });
+                    
+                    totalPagamentos += Math.abs(pagamento.total);
+                });
+            });
+            
+            // Criar conteúdo do relatório
+            let relatorioHTML = `
+                <h2>Relatório de Pagamentos</h2>
+                <p>Data: ${new Date(dataFiltro).toLocaleDateString('pt-BR')}</p>
+                <p>Total Recebido: ${formatCurrency(totalPagamentos)}</p>
+                <p>Quantidade de Pagamentos: ${pagamentosDoDia.length}</p>
+                <hr>
+                <table border="1" cellpadding="5" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th>Hora</th>
+                            <th>Cliente</th>
+                            <th>Nota</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            pagamentosDoDia.forEach(pagamento => {
+                relatorioHTML += `
+                    <tr>
+                        <td>${pagamento.hora}</td>
+                        <td>${pagamento.clienteNome}</td>
+                        <td>${pagamento.nota}</td>
+                        <td>${formatCurrency(pagamento.valor)}</td>
+                    </tr>
+                `;
+            });
+            
+            relatorioHTML += `
+                    </tbody>
+                </table>
+                <hr>
+                <p>Gerado em: ${new Date().toLocaleString('pt-BR')}</p>
+            `;
+            
+            // Criar nova janela para impressão
+            const janelaImpressao = window.open('', '_blank');
+            janelaImpressao.document.write(`
+                <html>
+                <head>
+                    <title>Relatório de Pagamentos - ${new Date(dataFiltro).toLocaleDateString('pt-BR')}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        h2 { color: #333; }
+                        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                        th { background-color: #f2f2f2; text-align: left; padding: 10px; }
+                        td { padding: 8px; border-bottom: 1px solid #ddd; }
+                        hr { margin: 20px 0; border: none; border-top: 1px solid #ddd; }
+                    </style>
+                </head>
+                <body>
+                    ${relatorioHTML}
+                </body>
+                </html>
+            `);
+            janelaImpressao.document.close();
+            janelaImpressao.print();
+            
+            showToast('Relatório gerado com sucesso!', 'success');
         }
 
         // ===== GERENCIAMENTO DE CLIENTES =====
@@ -2643,7 +2943,7 @@
                 saldoElement.style.color = 'var(--danger)';
             }
             
-            // Mostrar/ocultar botões condicionais (Recibo e Arquivar) - CORREÇÃO AQUI
+            // Mostrar/ocultar botões condicionais (Recibo e Arquivar)
             const conditionalButtons = document.getElementById('conditional-buttons');
             
             // Verificar se pode mostrar os botões condicionais
