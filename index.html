@@ -56,6 +56,8 @@
             display: flex;
             height: 100vh;
             overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         /* ===== TELA DE LOGIN ===== */
@@ -253,6 +255,7 @@
             border-radius: var(--radius-sm);
             margin: 5px 10px;
             position: relative;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .menu-item:hover {
@@ -316,6 +319,7 @@
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             transition: var(--transition);
+            -webkit-tap-highlight-color: transparent;
         }
 
         .mobile-menu-btn:hover {
@@ -342,6 +346,7 @@
             position: relative;
             width: 100%;
             transition: var(--transition);
+            -webkit-overflow-scrolling: touch;
         }
 
         .page-header {
@@ -429,6 +434,7 @@
             display: none;
             border: 1px solid var(--border);
             border-top: none;
+            -webkit-overflow-scrolling: touch;
         }
 
         .search-result-item {
@@ -439,10 +445,15 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .search-result-item:hover {
             background: rgba(0, 158, 42, 0.05);
+        }
+
+        .search-result-item:active {
+            background: rgba(0, 158, 42, 0.1);
         }
 
         .search-result-item:last-child {
@@ -512,6 +523,50 @@
             }
         }
 
+        @media (max-width: 768px) {
+            .client-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .client-balance {
+                text-align: left;
+                width: 100%;
+                margin-top: 15px;
+            }
+            
+            .stats-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .stats-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+            
+            .stats-value {
+                font-size: 1.8rem;
+            }
+            
+            .table-container {
+                border-radius: var(--radius-sm);
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .table {
+                min-width: 700px;
+            }
+            
+            .modal-content {
+                margin: 10px;
+                padding: 20px;
+            }
+        }
+
         @media (max-width: 576px) {
             .login-container {
                 padding: 30px 20px;
@@ -533,6 +588,64 @@
                 align-items: stretch;
                 gap: 10px;
             }
+            
+            .page-title {
+                font-size: 1.5rem;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+            
+            .btn {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+            
+            .form-control {
+                padding: 12px;
+                font-size: 0.95rem;
+            }
+            
+            .client-name {
+                font-size: 1.5rem;
+            }
+            
+            .balance-value {
+                font-size: 1.8rem;
+            }
+            
+            .detalhe-layout {
+                gap: 15px;
+            }
+            
+            .mobile-menu-btn {
+                top: 10px;
+                left: 10px;
+                width: 45px;
+                height: 45px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .pin-input {
+                width: 45px;
+                height: 45px;
+                font-size: 1.3rem;
+            }
+            
+            .main-content {
+                padding: 10px;
+                padding-top: 65px;
+            }
+            
+            .page-title {
+                font-size: 1.3rem;
+            }
+            
+            .stats-value {
+                font-size: 1.5rem;
+            }
         }
 
         /* ===== COMPONENTES REUTILIZÁVEIS ===== */
@@ -548,6 +661,7 @@
             transition: var(--transition);
             border: none;
             font-size: 0.95rem;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .btn-primary {
@@ -780,6 +894,7 @@
             cursor: pointer;
             transition: var(--transition);
             text-align: center;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .quick-action-compact:hover {
@@ -823,6 +938,10 @@
             .quick-actions-compact {
                 grid-template-columns: repeat(2, 1fr);
             }
+            
+            .detalhe-layout {
+                gap: 15px;
+            }
         }
 
         /* ===== TABELAS ===== */
@@ -832,6 +951,7 @@
             overflow: hidden;
             box-shadow: 0 5px 15px var(--shadow);
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .table {
@@ -858,10 +978,16 @@
         .table tbody tr {
             border-bottom: 1px solid var(--border);
             transition: var(--transition);
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .table tbody tr:hover {
             background: rgba(0, 158, 42, 0.03);
+        }
+
+        .table tbody tr:active {
+            background: rgba(0, 158, 42, 0.05);
         }
 
         .table td {
@@ -902,6 +1028,8 @@
             font-size: 1rem;
             transition: var(--transition);
             background: var(--card-bg);
+            -webkit-appearance: none;
+            appearance: none;
         }
 
         .form-control:focus {
@@ -1099,6 +1227,7 @@
             overflow-y: auto;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
             animation: modalFadeIn 0.3s ease-out;
+            -webkit-overflow-scrolling: touch;
         }
 
         @keyframes modalFadeIn {
@@ -1137,6 +1266,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .modal-close:hover {
@@ -1251,6 +1381,14 @@
             font-weight: 700;
             color: var(--secondary);
             margin-bottom: 5px;
+        }
+
+        .client-nickname {
+            font-size: 1.2rem;
+            color: var(--primary);
+            font-weight: 500;
+            margin-bottom: 10px;
+            font-style: italic;
         }
 
         .client-meta {
@@ -1457,16 +1595,66 @@
             min-width: 100px;
             border-right: 1px solid var(--border);
             margin-right: 10px;
+            -webkit-appearance: none;
+            appearance: none;
         }
 
         #search-type:focus {
             background: var(--bg);
         }
 
-        @media (max-width: 576px) {
-            #search-type {
-                min-width: 80px;
-                font-size: 0.9rem;
+        /* ===== MOBILE OPTIMIZATIONS ===== */
+        .mobile-tap-fix {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .touch-action {
+            touch-action: manipulation;
+        }
+
+        .no-scroll {
+            overflow: hidden;
+        }
+
+        /* ===== TOUCH FRIENDLY ===== */
+        @media (hover: none) and (pointer: coarse) {
+            .btn:hover {
+                transform: none;
+                box-shadow: none;
+            }
+            
+            .stats-card.clickable:hover {
+                transform: none;
+                box-shadow: none;
+            }
+            
+            .stats-card.clickable:active {
+                transform: scale(0.98);
+                box-shadow: 0 2px 5px var(--shadow);
+            }
+            
+            .table tbody tr:active {
+                background: rgba(0, 158, 42, 0.05);
+            }
+            
+            .search-result-item:active {
+                background: rgba(0, 158, 42, 0.1);
+            }
+            
+            .menu-item:active {
+                background: rgba(255, 255, 255, 0.15);
+                transform: scale(0.98);
+            }
+        }
+
+        /* ===== FONT SIZE ADJUSTMENTS FOR MOBILE ===== */
+        @media (max-width: 768px) {
+            html {
+                font-size: 14px;
+            }
+            
+            .form-control, .search-input {
+                font-size: 16px !important; /* Prevents iOS zoom on focus */
             }
         }
     </style>
@@ -1481,13 +1669,13 @@
             <p class="login-subtitle">Digite sua senha para acessar o sistema</p>
             
             <div class="pin-container">
-                <input type="password" maxlength="1" class="pin-input" id="pin-1" oninput="movePin(1)">
-                <input type="password" maxlength="1" class="pin-input" id="pin-2" oninput="movePin(2)">
-                <input type="password" maxlength="1" class="pin-input" id="pin-3" oninput="movePin(3)">
-                <input type="password" maxlength="1" class="pin-input" id="pin-4" oninput="movePin(4)">
+                <input type="password" maxlength="1" class="pin-input" id="pin-1" oninput="movePin(1)" onkeydown="handlePinKeydown(1, event)">
+                <input type="password" maxlength="1" class="pin-input" id="pin-2" oninput="movePin(2)" onkeydown="handlePinKeydown(2, event)">
+                <input type="password" maxlength="1" class="pin-input" id="pin-3" oninput="movePin(3)" onkeydown="handlePinKeydown(3, event)">
+                <input type="password" maxlength="1" class="pin-input" id="pin-4" oninput="movePin(4)" onkeydown="handlePinKeydown(4, event)">
             </div>
             
-            <button class="btn-login" onclick="checkLogin()">
+            <button class="btn-login" onclick="checkLogin()" id="login-button">
                 <i class="fas fa-lock-open"></i> ACESSAR SISTEMA
             </button>
             
@@ -1692,6 +1880,7 @@
                 <select id="search-type" style="padding: 8px; border: none; background: transparent; color: var(--text);">
                     <option value="all">Tudo</option>
                     <option value="name">Nome</option>
+                    <option value="nickname">Apelido</option>
                     <option value="cpf">CPF</option>
                     <option value="note">Nº Nota</option>
                     <option value="tel">Telefone</option>
@@ -1802,6 +1991,11 @@
                     </div>
                     
                     <div class="form-group">
+                        <label class="form-label" for="cad-apelido">Apelido (Opcional)</label>
+                        <input type="text" id="cad-apelido" class="form-control" placeholder="Como o cliente é conhecido">
+                    </div>
+                    
+                    <div class="form-group">
                         <label class="form-label" for="cad-cpf">CPF</label>
                         <input type="text" id="cad-cpf" class="form-control" placeholder="000.000.000-00" oninput="mascaraCPF(this)">
                     </div>
@@ -1826,7 +2020,7 @@
                     <button class="btn btn-outline" onclick="navTo('clientes')">
                         <i class="fas fa-times"></i> Cancelar
                     </button>
-                    <button class="btn btn-primary" onclick="saveClient()">
+                    <button class="btn btn-primary" onclick="saveClient()" id="save-client-btn">
                         <i class="fas fa-save"></i> Salvar Cliente
                     </button>
                 </div>
@@ -1840,7 +2034,10 @@
                     <button class="btn btn-outline" onclick="navTo('clientes')">
                         <i class="fas fa-arrow-left"></i> Voltar
                     </button>
-                    <span id="detalhe-nome">Nome do Cliente</span>
+                    <div>
+                        <span id="detalhe-nome">Nome do Cliente</span>
+                        <div id="detalhe-apelido" class="client-nickname"></div>
+                    </div>
                 </div>
                 
                 <div class="client-balance">
@@ -1916,19 +2113,19 @@
                         </div>
                         
                         <div class="form-group mb-10">
-                            <input type="text" id="add-desc" class="form-control form-control-small" placeholder="Produto/Serviço">
+                            <input type="text" id="add-desc" class="form-control form-control-small" placeholder="Produto/Serviço" onkeydown="handleEnterKey(event, 'add-val')">
                         </div>
                         
                         <div class="form-row">
-                            <input type="number" id="add-qtd" class="form-control form-control-small" value="1" min="0.01" step="0.01" placeholder="Qtd">
-                            <input type="number" id="add-val" class="form-control form-control-small" placeholder="R$ Unit" min="0" step="0.01">
+                            <input type="number" id="add-qtd" class="form-control form-control-small" value="1" min="0.01" step="0.01" placeholder="Qtd" onkeydown="handleEnterKey(event, 'add-val')">
+                            <input type="number" id="add-val" class="form-control form-control-small" placeholder="R$ Unit" min="0" step="0.01" onkeydown="handleEnterKey(event, 'add-desc-val')">
                         </div>
                         
                         <div class="form-group mb-10">
-                            <input type="number" id="add-desc-val" class="form-control form-control-small" placeholder="Desconto (R$)" min="0" step="0.01">
+                            <input type="number" id="add-desc-val" class="form-control form-control-small" placeholder="Desconto (R$)" min="0" step="0.01" onkeydown="handleEnterKey(event, 'addItem')">
                         </div>
                         
-                        <button class="btn btn-primary w-100" onclick="addItem()">
+                        <button class="btn btn-primary w-100" onclick="addItem()" id="add-item-btn">
                             <i class="fas fa-plus-circle"></i> Lançar Venda
                         </button>
                     </div>
@@ -1940,10 +2137,10 @@
                         </div>
                         
                         <div class="form-group mb-10">
-                            <input type="number" id="pay-val" class="form-control form-control-small" placeholder="Valor (R$)" min="0" step="0.01">
+                            <input type="number" id="pay-val" class="form-control form-control-small" placeholder="Valor (R$)" min="0" step="0.01" onkeydown="handleEnterKey(event, 'addPayment')">
                         </div>
                         
-                        <button class="btn btn-success w-100" onclick="addPayment()">
+                        <button class="btn btn-success w-100" onclick="addPayment()" id="add-payment-btn">
                             <i class="fas fa-check-circle"></i> Registrar Pagamento
                         </button>
                     </div>
@@ -2090,6 +2287,15 @@
             // Configurar data de hoje como padrão
             const hoje = new Date().toISOString().split('T')[0];
             document.getElementById('filter-data').value = hoje;
+            
+            // Adicionar listener para tecla Enter no login
+            setupLoginEnterKey();
+            
+            // Adicionar listener para tecla Enter no cadastro
+            setupCadastroEnterKey();
+            
+            // Prevenir zoom em iOS
+            preventZoom();
         });
 
         // ===== FUNÇÕES DE UTILIDADE =====
@@ -2159,7 +2365,53 @@
             }, 4000);
         }
 
-        // ===== SISTEMA DE LOGIN =====
+        // ===== PREVENIR ZOOM NO iOS =====
+        function preventZoom() {
+            let lastTouchEnd = 0;
+            document.addEventListener('touchstart', function(event) {
+                if (event.touches.length > 1) {
+                    event.preventDefault();
+                }
+            }, { passive: false });
+            
+            document.addEventListener('touchend', function(event) {
+                const now = (new Date()).getTime();
+                if (now - lastTouchEnd <= 300) {
+                    event.preventDefault();
+                }
+                lastTouchEnd = now;
+            }, false);
+            
+            // Prevenir double tap zoom
+            document.addEventListener('dblclick', function(event) {
+                event.preventDefault();
+            }, { passive: false });
+        }
+
+        // ===== SISTEMA DE LOGIN COM ENTER =====
+        function setupLoginEnterKey() {
+            // Adicionar listener para tecla Enter nos campos de PIN
+            document.querySelectorAll('.pin-input').forEach(input => {
+                input.addEventListener('keydown', function(event) {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        checkLogin();
+                    }
+                });
+            });
+        }
+
+        function handlePinKeydown(current, event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                checkLogin();
+            } else if (event.key === 'Backspace') {
+                if (document.getElementById(`pin-${current}`).value === '' && current > 1) {
+                    document.getElementById(`pin-${current - 1}`).focus();
+                }
+            }
+        }
+
         function movePin(current) {
             const pinInput = document.getElementById(`pin-${current}`);
             const pinValue = pinInput.value;
@@ -2209,7 +2461,36 @@
             }
         }
 
-        // ===== PESQUISA NO DASHBOARD =====
+        // ===== CADASTRO COM ENTER =====
+        function setupCadastroEnterKey() {
+            // Adicionar listener para tecla Enter no cadastro
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter' && document.getElementById('view-cadastro').classList.contains('active')) {
+                    const activeElement = document.activeElement;
+                    const isFormField = activeElement.classList.contains('form-control');
+                    
+                    if (isFormField) {
+                        event.preventDefault();
+                        saveClient();
+                    }
+                }
+            });
+        }
+
+        function handleEnterKey(event, nextFieldOrAction) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                if (nextFieldOrAction === 'addItem') {
+                    addItem();
+                } else if (nextFieldOrAction === 'addPayment') {
+                    addPayment();
+                } else {
+                    document.getElementById(nextFieldOrAction).focus();
+                }
+            }
+        }
+
+        // ===== PESQUISA NO DASHBOARD (MELHORADA) =====
         function searchFromDashboard() {
             const searchTerm = document.getElementById('dashboard-search').value.toLowerCase().trim();
             const resultsContainer = document.getElementById('dashboard-search-results');
@@ -2220,23 +2501,82 @@
                 return;
             }
             
-            // Se tiver pelo menos 2 caracteres, fazer a busca
-            if (searchTerm.length < 2) return;
+            // Se tiver pelo menos 1 caractere, fazer a busca
+            if (searchTerm.length < 1) return;
             
-            // Buscar clientes por nome, número da nota ou telefone
-            const searchResults = localClients.filter(client => {
-                const clientName = client.nome ? client.nome.toLowerCase() : '';
-                const noteNumber = client.activeNoteNumber ? client.activeNoteNumber.toString().toLowerCase() : '';
-                const clientPhone = client.tel ? client.tel.toLowerCase() : '';
-                const clientCPF = client.cpf ? client.cpf.toLowerCase() : '';
-                const clientCity = client.cidade ? client.cidade.toLowerCase() : '';
-                
-                return clientName.includes(searchTerm) || 
-                       noteNumber.includes(searchTerm) ||
-                       clientPhone.includes(searchTerm) ||
-                       clientCPF.includes(searchTerm) ||
-                       clientCity.includes(searchTerm);
-            });
+            // Verificar se a busca é por número
+            const isNumberSearch = /^\d+$/.test(searchTerm);
+            const searchNumber = isNumberSearch ? parseInt(searchTerm) : null;
+            
+            // Buscar clientes e classificar por relevância
+            const searchResults = localClients
+                .map(client => {
+                    const clientName = client.nome ? client.nome.toLowerCase() : '';
+                    const clientNickname = client.apelido ? client.apelido.toLowerCase() : '';
+                    const noteNumber = client.activeNoteNumber ? client.activeNoteNumber.toString() : '';
+                    const clientPhone = client.tel ? client.tel.toLowerCase() : '';
+                    const clientCPF = client.cpf ? client.cpf.toLowerCase() : '';
+                    const clientCity = client.cidade ? client.cidade.toLowerCase() : '';
+                    
+                    let relevance = 0;
+                    
+                    // Verificar correspondências exatas primeiro
+                    if (isNumberSearch && noteNumber === searchTerm) {
+                        relevance += 100; // Máxima prioridade para número exato
+                    }
+                    
+                    // Verificar se o número da nota começa com o termo buscado
+                    if (isNumberSearch && noteNumber.startsWith(searchTerm)) {
+                        relevance += 50;
+                    }
+                    
+                    // Verificar se o número da nota contém o termo buscado
+                    if (isNumberSearch && noteNumber.includes(searchTerm)) {
+                        relevance += 20;
+                    }
+                    
+                    // Verificar nome exato (case insensitive)
+                    if (clientName.includes(searchTerm)) {
+                        relevance += 30;
+                    }
+                    
+                    // Verificar apelido exato
+                    if (clientNickname.includes(searchTerm)) {
+                        relevance += 25;
+                    }
+                    
+                    // Verificar telefone
+                    if (clientPhone.includes(searchTerm)) {
+                        relevance += 10;
+                    }
+                    
+                    // Verificar CPF
+                    if (clientCPF.includes(searchTerm)) {
+                        relevance += 15;
+                    }
+                    
+                    // Verificar cidade
+                    if (clientCity.includes(searchTerm)) {
+                        relevance += 5;
+                    }
+                    
+                    return { client, relevance };
+                })
+                .filter(item => item.relevance > 0)
+                .sort((a, b) => {
+                    // Ordenar por relevância (maior primeiro)
+                    if (b.relevance !== a.relevance) {
+                        return b.relevance - a.relevance;
+                    }
+                    
+                    // Se mesma relevância, ordenar por número de nota (menor primeiro)
+                    const aNote = a.client.activeNoteNumber || 999999;
+                    const bNote = b.client.activeNoteNumber || 999999;
+                    
+                    // Comparação numérica para ordenar corretamente (1, 2, 3, 10, 11)
+                    return parseInt(aNote) - parseInt(bNote);
+                })
+                .map(item => item.client);
             
             // Mostrar resultados
             if (searchResults.length > 0) {
@@ -2246,17 +2586,24 @@
                 searchResults.slice(0, 10).forEach(client => {
                     const balance = (client.transactions || []).reduce((sum, transaction) => sum + transaction.total, 0);
                     const noteNumber = client.activeNoteNumber ? `#${client.activeNoteNumber}` : 'Sem nota';
+                    const nickname = client.apelido ? ` (${client.apelido})` : '';
+                    
+                    // Destacar número da nota se for busca numérica
+                    let noteDisplay = noteNumber;
+                    if (isNumberSearch && client.activeNoteNumber && client.activeNoteNumber.toString().includes(searchTerm)) {
+                        noteDisplay = `<strong style="color: var(--primary);">${noteNumber}</strong>`;
+                    }
                     
                     resultsHTML += `
-                        <div class="search-result-item" onclick="openClientFromSearch('${client.id}')">
+                        <div class="search-result-item touch-action" onclick="openClientFromSearch('${client.id}')">
                             <div class="search-result-info">
-                                <div class="search-result-name">${client.nome}</div>
+                                <div class="search-result-name">${client.nome}${nickname}</div>
                                 <div class="search-result-details">
                                     ${client.cidade || ''} • ${client.tel || ''}
                                     <br>Saldo: ${formatCurrency(balance)}
                                 </div>
                             </div>
-                            <div class="search-result-nota">${noteNumber}</div>
+                            <div class="search-result-nota">${noteDisplay}</div>
                         </div>
                     `;
                 });
@@ -2299,6 +2646,11 @@
             searchInput.value = '';
             resultsContainer.style.display = 'none';
             resultsContainer.innerHTML = '';
+            
+            // Fechar sidebar no mobile
+            if (window.innerWidth <= 992) {
+                toggleSidebar();
+            }
             
             // Abrir o cliente
             openClient(clientId);
@@ -2356,6 +2708,13 @@
             
             sidebar.classList.toggle('active');
             overlay.classList.toggle('active');
+            
+            // Prevenir scroll quando sidebar está aberta
+            if (sidebar.classList.contains('active')) {
+                document.body.classList.add('no-scroll');
+            } else {
+                document.body.classList.remove('no-scroll');
+            }
         }
 
         function navTo(screenId) {
@@ -2706,6 +3065,7 @@
             
             // Preencher formulário com dados do cliente
             document.getElementById('cad-nome').value = currentClient.nome || '';
+            document.getElementById('cad-apelido').value = currentClient.apelido || '';
             document.getElementById('cad-cpf').value = currentClient.cpf || '';
             document.getElementById('cad-tel').value = currentClient.tel || '';
             document.getElementById('cad-cidade').value = currentClient.cidade || '';
@@ -2728,6 +3088,7 @@
             // Preparar dados do cliente
             const clientData = {
                 nome: nome,
+                apelido: document.getElementById('cad-apelido').value.trim(),
                 cpf: document.getElementById('cad-cpf').value.trim(),
                 tel: document.getElementById('cad-tel').value.trim(),
                 cidade: document.getElementById('cad-cidade').value.trim(),
@@ -2804,51 +3165,148 @@
             }
         }
 
+        // ===== FUNÇÃO DE RENDERIZAR CLIENTES (MELHORADA) =====
         function renderClients() {
             const searchTerm = document.getElementById('search-client').value.toLowerCase();
             const searchType = document.getElementById('search-type').value;
             const tbody = document.getElementById('clientes-list');
             
-            // Filtrar clientes
-            const filteredClients = localClients.filter(client => {
-                if (!searchTerm) return true;
-                
-                switch(searchType) {
-                    case 'name':
-                        return client.nome.toLowerCase().includes(searchTerm);
-                        
-                    case 'cpf':
-                        return client.cpf && client.cpf.includes(searchTerm);
-                        
-                    case 'note':
-                        return client.activeNoteNumber && 
-                               client.activeNoteNumber.toString().toLowerCase().includes(searchTerm);
-                        
-                    case 'tel':
-                        return client.tel && client.tel.includes(searchTerm);
-                        
-                    case 'city':
-                        return client.cidade && 
-                               client.cidade.toLowerCase().includes(searchTerm);
-                        
-                    default: // 'all' - busca em todos os campos
-                        return (
-                            client.nome.toLowerCase().includes(searchTerm) ||
-                            (client.cpf && client.cpf.includes(searchTerm)) ||
-                            (client.activeNoteNumber && 
-                             client.activeNoteNumber.toString().toLowerCase().includes(searchTerm)) ||
-                            (client.tel && client.tel.includes(searchTerm)) ||
-                            (client.cidade && client.cidade.toLowerCase().includes(searchTerm))
-                        );
-                }
-            });
+            // Verificar se a busca é por número
+            const isNumberSearch = /^\d+$/.test(searchTerm) && (searchType === 'all' || searchType === 'note');
             
-            // Ordenar por saldo (maior para menor)
-            filteredClients.sort((a, b) => {
-                const balanceA = (a.transactions || []).reduce((sum, t) => sum + t.total, 0);
-                const balanceB = (b.transactions || []).reduce((sum, t) => sum + t.total, 0);
-                return balanceB - balanceA;
-            });
+            // Filtrar e classificar clientes por relevância
+            const clientRelevance = localClients
+                .map(client => {
+                    let matches = false;
+                    let relevance = 0;
+                    
+                    if (!searchTerm) {
+                        matches = true;
+                        relevance = 0;
+                    } else {
+                        switch(searchType) {
+                            case 'name':
+                                if (client.nome.toLowerCase().includes(searchTerm)) {
+                                    matches = true;
+                                    relevance = 30;
+                                }
+                                break;
+                                
+                            case 'nickname':
+                                if (client.apelido && client.apelido.toLowerCase().includes(searchTerm)) {
+                                    matches = true;
+                                    relevance = 25;
+                                }
+                                break;
+                                
+                            case 'cpf':
+                                if (client.cpf && client.cpf.includes(searchTerm)) {
+                                    matches = true;
+                                    relevance = 15;
+                                }
+                                break;
+                                
+                            case 'note':
+                                const noteStr = client.activeNoteNumber ? client.activeNoteNumber.toString() : '';
+                                if (noteStr) {
+                                    if (noteStr === searchTerm) {
+                                        matches = true;
+                                        relevance = 100; // Máxima prioridade para número exato
+                                    } else if (noteStr.startsWith(searchTerm)) {
+                                        matches = true;
+                                        relevance = 50;
+                                    } else if (noteStr.includes(searchTerm)) {
+                                        matches = true;
+                                        relevance = 20;
+                                    }
+                                }
+                                break;
+                                
+                            case 'tel':
+                                if (client.tel && client.tel.includes(searchTerm)) {
+                                    matches = true;
+                                    relevance = 10;
+                                }
+                                break;
+                                
+                            case 'city':
+                                if (client.cidade && client.cidade.toLowerCase().includes(searchTerm)) {
+                                    matches = true;
+                                    relevance = 5;
+                                }
+                                break;
+                                
+                            default: // 'all' - busca em todos os campos
+                                const clientName = client.nome ? client.nome.toLowerCase() : '';
+                                const clientNickname = client.apelido ? client.apelido.toLowerCase() : '';
+                                const noteNumber = client.activeNoteNumber ? client.activeNoteNumber.toString().toLowerCase() : '';
+                                const clientPhone = client.tel ? client.tel.toLowerCase() : '';
+                                const clientCPF = client.cpf ? client.cpf.toLowerCase() : '';
+                                const clientCity = client.cidade ? client.cidade.toLowerCase() : '';
+                                
+                                // Para busca numérica, priorizar número da nota
+                                if (isNumberSearch && noteNumber) {
+                                    if (noteNumber === searchTerm) {
+                                        matches = true;
+                                        relevance = 100;
+                                    } else if (noteNumber.startsWith(searchTerm)) {
+                                        matches = true;
+                                        relevance = 50;
+                                    } else if (noteNumber.includes(searchTerm)) {
+                                        matches = true;
+                                        relevance = 20;
+                                    }
+                                }
+                                
+                                // Se não for busca numérica ou não encontrou na nota, verificar outros campos
+                                if (!matches || !isNumberSearch) {
+                                    if (clientName.includes(searchTerm)) {
+                                        matches = true;
+                                        relevance = Math.max(relevance, 30);
+                                    }
+                                    if (clientNickname.includes(searchTerm)) {
+                                        matches = true;
+                                        relevance = Math.max(relevance, 25);
+                                    }
+                                    if (clientCPF.includes(searchTerm)) {
+                                        matches = true;
+                                        relevance = Math.max(relevance, 15);
+                                    }
+                                    if (clientPhone.includes(searchTerm)) {
+                                        matches = true;
+                                        relevance = Math.max(relevance, 10);
+                                    }
+                                    if (clientCity.includes(searchTerm)) {
+                                        matches = true;
+                                        relevance = Math.max(relevance, 5);
+                                    }
+                                }
+                        }
+                    }
+                    
+                    return { client, matches, relevance };
+                })
+                .filter(item => item.matches)
+                .sort((a, b) => {
+                    // Ordenar por relevância (maior primeiro)
+                    if (b.relevance !== a.relevance) {
+                        return b.relevance - a.relevance;
+                    }
+                    
+                    // Para busca por número, ordenar por número de nota (menor primeiro)
+                    if (isNumberSearch) {
+                        const aNote = a.client.activeNoteNumber || 999999;
+                        const bNote = b.client.activeNoteNumber || 999999;
+                        return parseInt(aNote) - parseInt(bNote);
+                    }
+                    
+                    // Caso contrário, ordenar por saldo (maior para menor)
+                    const balanceA = (a.client.transactions || []).reduce((sum, t) => sum + t.total, 0);
+                    const balanceB = (b.client.transactions || []).reduce((sum, t) => sum + t.total, 0);
+                    return balanceB - balanceA;
+                });
+            
+            const filteredClients = clientRelevance.map(item => item.client);
             
             // Gerar HTML da tabela
             let tableHTML = '';
@@ -2882,13 +3340,21 @@
                     
                     // Número da nota (agora fixo)
                     const noteNumber = client.activeNoteNumber ? `#${client.activeNoteNumber}` : '-';
+                    const nickname = client.apelido ? `<br><small style="color: var(--primary); font-style: italic;">${client.apelido}</small>` : '';
+                    
+                    // Destacar número da nota se for busca numérica
+                    let noteDisplay = `<strong>${noteNumber}</strong>`;
+                    if (isNumberSearch && client.activeNoteNumber && client.activeNoteNumber.toString().includes(searchTerm)) {
+                        noteDisplay = `<strong style="color: var(--primary); font-size: 1.1em;">${noteNumber}</strong>`;
+                    }
                     
                     tableHTML += `
-                        <tr onclick="openClient('${client.id}')" style="cursor: pointer;">
-                            <td><strong>${noteNumber}</strong></td>
+                        <tr onclick="openClient('${client.id}')" style="cursor: pointer;" class="touch-action">
+                            <td>${noteDisplay}</td>
                             <td>
                                 <div style="font-weight: 600;">${client.nome}</div>
-                                <small style="color: var(--text-light);">${client.cidade || 'Sem cidade'}</small>
+                                ${nickname}
+                                <small style="color: var(--text-light); display: block; margin-top: 3px;">${client.cidade || 'Sem cidade'}</small>
                             </td>
                             <td>${client.tel || '-'}</td>
                             <td style="font-weight: 700; color: ${balance > 0.05 ? 'var(--danger)' : 'var(--success)'}">
@@ -2933,6 +3399,14 @@
             
             // Atualizar informações básicas
             document.getElementById('detalhe-nome').textContent = currentClient.nome;
+            const nicknameElement = document.getElementById('detalhe-apelido');
+            if (currentClient.apelido) {
+                nicknameElement.textContent = `"${currentClient.apelido}"`;
+                nicknameElement.style.display = 'block';
+            } else {
+                nicknameElement.style.display = 'none';
+            }
+            
             document.getElementById('info-cpf').textContent = `CPF: ${currentClient.cpf || '-'}`;
             document.getElementById('info-tel').textContent = `Tel: ${currentClient.tel || '-'}`;
             document.getElementById('info-cidade').textContent = `Cidade: ${currentClient.cidade || '-'}`;
@@ -3028,7 +3502,9 @@
             document.getElementById('pay-val').value = '';
             
             // Focar no campo de descrição
-            document.getElementById('add-desc').focus();
+            setTimeout(() => {
+                document.getElementById('add-desc').focus();
+            }, 100);
         }
 
         // ===== TRANSAÇÕES =====
@@ -3104,7 +3580,9 @@
                     document.getElementById('add-val').value = '';
                     document.getElementById('add-desc-val').value = '';
                     document.getElementById('add-qtd').value = '1';
-                    document.getElementById('add-desc').focus();
+                    setTimeout(() => {
+                        document.getElementById('add-desc').focus();
+                    }, 100);
                 })
                 .catch(error => {
                     console.error("Erro ao registrar venda:", error);
@@ -3166,7 +3644,9 @@
                 .then(() => {
                     showToast('Pagamento registrado com sucesso!', 'success');
                     document.getElementById('pay-val').value = '';
-                    document.getElementById('pay-val').focus();
+                    setTimeout(() => {
+                        document.getElementById('pay-val').focus();
+                    }, 100);
                 })
                 .catch(error => {
                     console.error("Erro ao registrar pagamento:", error);
@@ -3272,6 +3752,7 @@
                 const overdueData = getOverdueData(client);
                 const cleanTel = client.tel ? client.tel.replace(/\D/g, '') : '';
                 const noteNumber = client.activeNoteNumber || '?';
+                const nickname = client.apelido ? ` (${client.apelido})` : '';
                 
                 // Mensagem para WhatsApp
                 const message = encodeURIComponent(
@@ -3300,7 +3781,7 @@
                 notificationsHTML += `
                     <div class="notification-item">
                         <div class="notification-content">
-                            <div class="notification-title">${client.nome}</div>
+                            <div class="notification-title">${client.nome}${nickname}</div>
                             <div class="notification-desc">
                                 Nota #${noteNumber} • Atrasado há ${overdueData.days} dias • 
                                 Valor: ${formatCurrency(overdueData.amount)}
@@ -3520,6 +4001,7 @@
                             <p style="text-align: justify;">
                                 Declaramos que <strong>${currentClient.nome}</strong> 
                                 ${currentClient.cpf ? `(CPF: ${currentClient.cpf})` : ''} 
+                                ${currentClient.apelido ? `"${currentClient.apelido}"` : ''}
                                 realizou a quitação total de seus débitos conosco.
                             </p>
                             <br><br>
@@ -3540,6 +4022,7 @@
                             <p style="text-align: justify;">
                                 Declaramos que <strong>${currentClient.nome}</strong> 
                                 ${currentClient.cpf ? `(CPF: ${currentClient.cpf})` : ''} 
+                                ${currentClient.apelido ? `"${currentClient.apelido}"` : ''}
                                 realizou a quitação total de seus débitos conosco.
                             </p>
                             <br><br>
@@ -3556,6 +4039,7 @@
                 const balance = transactions.reduce((sum, t) => sum + t.total, 0);
                 const noteNumber = currentClient.activeNoteNumber || '--';
                 const hoje = new Date().toLocaleString('pt-BR');
+                const nickname = currentClient.apelido ? `"${currentClient.apelido}"` : '';
                 
                 // Gerar conteúdo da via da loja
                 const viaLoja = `
@@ -3563,7 +4047,7 @@
                         <center>
                             <h2>AGROVIDA MAIS</h2>
                             <p><strong>EXTRATO - NOTA #${noteNumber}</strong></p>
-                            <p>Cliente: ${currentClient.nome}</p>
+                            <p>Cliente: ${currentClient.nome} ${nickname}</p>
                             <p>Data: ${hoje}</p>
                         </center>
                         <hr>
@@ -3590,7 +4074,7 @@
                         <center>
                             <h2>AGROVIDA MAIS</h2>
                             <p><strong>EXTRATO - NOTA #${noteNumber}</strong></p>
-                            <p>Cliente: ${currentClient.nome}</p>
+                            <p>Cliente: ${currentClient.nome} ${nickname}</p>
                             <p>Data: ${hoje}</p>
                         </center>
                         <hr>
@@ -3699,17 +4183,7 @@
             
             // Navegação entre campos com Enter
             if (event.key === 'Enter' && event.target.classList.contains('form-control')) {
-                event.preventDefault();
-                
-                // Encontrar todos os campos do formulário ativo
-                const activeSection = document.querySelector('.view-section.active');
-                const inputs = Array.from(activeSection.querySelectorAll('.form-control'));
-                const currentIndex = inputs.indexOf(event.target);
-                
-                // Se não for o último campo, focar no próximo
-                if (currentIndex < inputs.length - 1) {
-                    inputs[currentIndex + 1].focus();
-                }
+                // Já tratado nas funções específicas
             }
         });
 
@@ -3728,6 +4202,18 @@
                 searchResults.style.display = 'none';
             }
         });
+
+        // Fechar sidebar quando clicar em um link no mobile
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function() {
+                if (window.innerWidth <= 992) {
+                    toggleSidebar();
+                }
+            });
+        });
+
+        // Melhorar toque no mobile
+        document.addEventListener('touchstart', function() {}, { passive: true });
 
     </script>
 </body>
