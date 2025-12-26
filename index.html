@@ -1120,6 +1120,7 @@
             font-weight: 600;
             color: var(--secondary);
             margin-bottom: 5px;
+            display: none;
         }
 
         .notification-desc {
@@ -1703,7 +1704,7 @@
     <button class="mobile-menu-btn" onclick="toggleSidebar()">
         <i class="fas fa-bars"></i>
     </button>
-    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <div class="sidebar-overlay" onclick="closeSidebar()"></div>
 
     <!-- Sidebar -->
     <aside class="sidebar">
@@ -2445,6 +2446,13 @@
             
             // Melhorar comportamento do hamburger menu
             setupHamburgerMenu();
+            
+            // Adicionar listener para fechar o menu ao clicar em qualquer lugar do conteúdo principal
+            document.querySelector('.main-content').addEventListener('click', function() {
+                if (window.innerWidth <= 992) {
+                    closeSidebar();
+                }
+            });
         });
 
         // ===== FUNÇÕES DE UTILIDADE =====
@@ -2518,42 +2526,49 @@
         function setupHamburgerMenu() {
             const sidebar = document.querySelector('.sidebar');
             const overlay = document.querySelector('.sidebar-overlay');
-            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
             
             // Fechar sidebar ao clicar em um item do menu
             document.querySelectorAll('.menu-item').forEach(item => {
                 item.addEventListener('click', function() {
                     if (window.innerWidth <= 992) {
-                        toggleSidebar();
+                        closeSidebar();
                     }
                 });
             });
             
             // Fechar sidebar ao clicar no overlay
             overlay.addEventListener('click', function() {
-                toggleSidebar();
+                closeSidebar();
             });
             
             // Fechar sidebar ao pressionar ESC
             document.addEventListener('keydown', function(event) {
                 if (event.key === 'Escape' && sidebar.classList.contains('active')) {
-                    toggleSidebar();
+                    closeSidebar();
                 }
             });
+        }
+
+        // Função para fechar o sidebar (nova função)
+        function closeSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.classList.remove('no-scroll');
         }
 
         function toggleSidebar() {
             const sidebar = document.querySelector('.sidebar');
             const overlay = document.querySelector('.sidebar-overlay');
             
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-            
-            // Prevenir scroll quando sidebar está aberta
             if (sidebar.classList.contains('active')) {
-                document.body.classList.add('no-scroll');
+                closeSidebar();
             } else {
-                document.body.classList.remove('no-scroll');
+                sidebar.classList.add('active');
+                overlay.classList.add('active');
+                document.body.classList.add('no-scroll');
             }
         }
 
@@ -2841,7 +2856,7 @@
             
             // Fechar sidebar no mobile
             if (window.innerWidth <= 992) {
-                toggleSidebar();
+                closeSidebar();
             }
             
             // Abrir o cliente
@@ -2900,9 +2915,9 @@
 
         // ===== NAVEGAÇÃO =====
         function navTo(screenId) {
-            // Fechar sidebar no mobile
+            // Fechar sidebar no mobile SEMPRE
             if (window.innerWidth <= 992) {
-                toggleSidebar();
+                closeSidebar();
             }
             
             // Esconder todas as seções
@@ -3296,6 +3311,11 @@
 
         // ===== GERENCIAMENTO DE CLIENTES =====
         function novoCadastro() {
+            // Fechar sidebar no mobile
+            if (window.innerWidth <= 992) {
+                closeSidebar();
+            }
+            
             navTo('cadastro');
             document.getElementById('form-title').textContent = "Novo Cliente";
             document.getElementById('edit-id').value = "";
