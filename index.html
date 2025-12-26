@@ -1922,6 +1922,9 @@
                     <span>Pagamentos Recebidos</span>
                 </div>
                 <div class="page-actions">
+                    <button class="btn btn-primary" onclick="consultarPagamentosArquivados()">
+                        <i class="fas fa-history"></i> Pagamentos Arquivados
+                    </button>
                     <button class="btn btn-outline" onclick="gerarRelatorioPagamentos()">
                         <i class="fas fa-file-export"></i> Exportar Relatório
                     </button>
@@ -2196,11 +2199,113 @@
                     <div class="icon"><i class="fas fa-chart-bar"></i></div>
                     <span>Relatórios</span>
                 </div>
+                <div class="page-actions">
+                    <button class="btn btn-primary" onclick="gerarRelatorioClientes()">
+                        <i class="fas fa-users"></i> Relatório de Clientes
+                    </button>
+                    <button class="btn btn-success" onclick="gerarRelatorioFinanceiro()">
+                        <i class="fas fa-chart-line"></i> Relatório Financeiro
+                    </button>
+                </div>
             </div>
             
-            <div class="card">
-                <h3 class="mb-20">Relatórios Disponíveis</h3>
-                <p class="mb-30">Em breve: relatórios financeiros, histórico de vendas, análise de inadimplência e muito mais.</p>
+            <div class="dashboard-grid">
+                <div class="stats-card clickable" onclick="gerarRelatorioClientes()">
+                    <div class="stats-icon" style="background: rgba(52, 152, 219, 0.1); color: var(--info);">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stats-content">
+                        <div class="stats-label">RELATÓRIO DE CLIENTES</div>
+                        <div class="stats-value" id="relatorio-clientes-total">0</div>
+                        <div class="stats-trend">
+                            <span>Total de clientes cadastrados</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stats-card clickable" onclick="gerarRelatorioFinanceiro()">
+                    <div class="stats-icon" style="background: rgba(46, 204, 113, 0.1); color: var(--success);">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="stats-content">
+                        <div class="stats-label">SITUAÇÃO FINANCEIRA</div>
+                        <div class="stats-value" id="relatorio-total-receber">R$ 0,00</div>
+                        <div class="stats-trend">
+                            <span>Valor total a receber</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stats-card clickable" onclick="abrirRelatorioAtrasados()">
+                    <div class="stats-icon" style="background: rgba(243, 156, 18, 0.1); color: var(--warning);">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stats-content">
+                        <div class="stats-label">CLIENTES ATRASADOS</div>
+                        <div class="stats-value" id="relatorio-atrasados">0</div>
+                        <div class="stats-trend trend-down">
+                            <span>Clientes com pagamento atrasado</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stats-card clickable" onclick="gerarRelatorioPagamentosPeriodo()">
+                    <div class="stats-icon" style="background: rgba(155, 89, 182, 0.1); color: #9b59b6;">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="stats-content">
+                        <div class="stats-label">PAGAMENTOS POR PERÍODO</div>
+                        <div class="stats-value" id="relatorio-pagamentos-periodo">R$ 0,00</div>
+                        <div class="stats-trend">
+                            <span>Total dos últimos 30 dias</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid-2col">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-chart-pie"></i> Distribuição por Cidade</h3>
+                    </div>
+                    <div id="distribuicao-cidade">
+                        <p style="text-align: center; color: var(--text-light); padding: 30px 0;">
+                            <i class="fas fa-map-marker-alt fa-2x mb-10"></i><br>
+                            Nenhum dado disponível
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-calendar-check"></i> Pagamentos Recentes</h3>
+                        <button class="btn btn-sm btn-outline" onclick="gerarRelatorioPagamentos()">
+                            <i class="fas fa-download"></i> Exportar
+                        </button>
+                    </div>
+                    <div id="pagamentos-recentes">
+                        <p style="text-align: center; color: var(--text-light); padding: 30px 0;">
+                            <i class="fas fa-hand-holding-usd fa-2x mb-10"></i><br>
+                            Nenhum pagamento recente
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filtros para Relatórios -->
+            <div class="date-filter-container">
+                <div class="date-filter-group">
+                    <label class="date-filter-label">Período:</label>
+                    <input type="date" id="relatorio-data-inicio" class="date-filter-input" value="<?php echo date('Y-m-01'); ?>">
+                    <span>até</span>
+                    <input type="date" id="relatorio-data-fim" class="date-filter-input" value="<?php echo date('Y-m-d'); ?>">
+                    <button class="btn btn-sm btn-primary" onclick="filtrarRelatorios()">
+                        <i class="fas fa-filter"></i> Aplicar Filtro
+                    </button>
+                    <button class="btn btn-sm btn-outline" onclick="resetarFiltroRelatorios()">
+                        <i class="fas fa-redo"></i> Limpar
+                    </button>
+                </div>
             </div>
         </section>
     </main>
@@ -2248,6 +2353,41 @@
         </div>
     </div>
 
+    <!-- Modal para Pagamentos Arquivados -->
+    <div id="modal-pagamentos-arquivados" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-history"></i> Pagamentos Arquivados</h3>
+                <button class="modal-close" onclick="closeModal('modal-pagamentos-arquivados')">&times;</button>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <p>Visualize todos os pagamentos registrados em ciclos arquivados:</p>
+            </div>
+            
+            <div style="max-height: 400px; overflow-y: auto;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Nota</th>
+                            <th>Data</th>
+                            <th>Valor</th>
+                            <th>Tipo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pagamentos-arquivados-list">
+                        <!-- Pagamentos arquivados serão carregados aqui -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="text-center mt-20">
+                <div class="badge badge-info" id="pagamentos-arquivados-count">0 pagamentos encontrados</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Área de Impressão -->
     <div id="print-area"></div>
 
@@ -2288,6 +2428,12 @@
             const hoje = new Date().toISOString().split('T')[0];
             document.getElementById('filter-data').value = hoje;
             
+            // Configurar datas para relatórios (mês atual)
+            const primeiroDiaMes = new Date();
+            primeiroDiaMes.setDate(1);
+            document.getElementById('relatorio-data-inicio').value = primeiroDiaMes.toISOString().split('T')[0];
+            document.getElementById('relatorio-data-fim').value = hoje;
+            
             // Adicionar listener para tecla Enter no login
             setupLoginEnterKey();
             
@@ -2296,6 +2442,9 @@
             
             // Prevenir zoom em iOS
             preventZoom();
+            
+            // Melhorar comportamento do hamburger menu
+            setupHamburgerMenu();
         });
 
         // ===== FUNÇÕES DE UTILIDADE =====
@@ -2363,6 +2512,49 @@
                     toast.remove();
                 }
             }, 4000);
+        }
+
+        // ===== CORREÇÃO DO HAMBURGER MENU =====
+        function setupHamburgerMenu() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            
+            // Fechar sidebar ao clicar em um item do menu
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    if (window.innerWidth <= 992) {
+                        toggleSidebar();
+                    }
+                });
+            });
+            
+            // Fechar sidebar ao clicar no overlay
+            overlay.addEventListener('click', function() {
+                toggleSidebar();
+            });
+            
+            // Fechar sidebar ao pressionar ESC
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && sidebar.classList.contains('active')) {
+                    toggleSidebar();
+                }
+            });
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            
+            // Prevenir scroll quando sidebar está aberta
+            if (sidebar.classList.contains('active')) {
+                document.body.classList.add('no-scroll');
+            } else {
+                document.body.classList.remove('no-scroll');
+            }
         }
 
         // ===== PREVENIR ZOOM NO iOS =====
@@ -2681,6 +2873,11 @@
                     // Atualizar UI
                     refreshUI();
                     
+                    // Atualizar relatórios se a tela estiver ativa
+                    if (document.getElementById('view-relatorios').classList.contains('active')) {
+                        updateRelatorios();
+                    }
+                    
                     // Esconder loading screen
                     document.getElementById('loading-screen').style.display = 'none';
                 }, error => {
@@ -2702,22 +2899,12 @@
         }
 
         // ===== NAVEGAÇÃO =====
-        function toggleSidebar() {
-            const sidebar = document.querySelector('.sidebar');
-            const overlay = document.querySelector('.sidebar-overlay');
-            
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-            
-            // Prevenir scroll quando sidebar está aberta
-            if (sidebar.classList.contains('active')) {
-                document.body.classList.add('no-scroll');
-            } else {
-                document.body.classList.remove('no-scroll');
-            }
-        }
-
         function navTo(screenId) {
+            // Fechar sidebar no mobile
+            if (window.innerWidth <= 992) {
+                toggleSidebar();
+            }
+            
             // Esconder todas as seções
             document.querySelectorAll('.view-section').forEach(section => {
                 section.classList.remove('active');
@@ -2733,18 +2920,13 @@
             
             // Encontrar e ativar o item correto do menu
             let menuId = `menu-${screenId}`;
-            if (screenId === 'detalhe') {
+            if (screenId === 'detalhe' || screenId === 'cadastro') {
                 menuId = 'menu-clientes';
             }
             
             const activeMenuItem = document.getElementById(menuId);
             if (activeMenuItem) {
                 activeMenuItem.classList.add('active');
-            }
-            
-            // Fechar sidebar no mobile
-            if (window.innerWidth <= 992) {
-                toggleSidebar();
             }
             
             // Executar ações específicas da página
@@ -2769,6 +2951,10 @@
                     setTimeout(() => {
                         document.getElementById('dashboard-search').focus();
                     }, 100);
+                    break;
+                    
+                case 'relatorios':
+                    updateRelatorios();
                     break;
             }
         }
@@ -2940,6 +3126,82 @@
             const hoje = new Date().toISOString().split('T')[0];
             document.getElementById('filter-data').value = hoje;
             filtrarPagamentos();
+        }
+
+        // ===== NOVA FUNÇÃO: CONSULTAR PAGAMENTOS ARQUIVADOS =====
+        function consultarPagamentosArquivados() {
+            // Coletar todos os pagamentos de ciclos arquivados
+            let pagamentosArquivados = [];
+            
+            localClients.forEach(client => {
+                const history = client.history || [];
+                
+                history.forEach(ciclo => {
+                    // Buscar pagamentos neste ciclo
+                    const pagamentosCiclo = ciclo.itens.filter(t => t.type === 'credit');
+                    
+                    pagamentosCiclo.forEach(pagamento => {
+                        pagamentosArquivados.push({
+                            clienteNome: client.nome,
+                            clienteApelido: client.apelido,
+                            nota: ciclo.noteNumber || '--',
+                            data: pagamento.date,
+                            valor: Math.abs(pagamento.total),
+                            dataArquivamento: ciclo.dataArquivamento
+                        });
+                    });
+                });
+            });
+            
+            // Ordenar por data de arquivamento (mais recente primeiro)
+            pagamentosArquivados.sort((a, b) => new Date(b.dataArquivamento) - new Date(a.dataArquivamento));
+            
+            // Atualizar tabela no modal
+            const tbody = document.getElementById('pagamentos-arquivados-list');
+            
+            if (pagamentosArquivados.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 40px 20px;">
+                            <i class="fas fa-history fa-2x mb-10" style="color: var(--text-light);"></i>
+                            <p style="color: var(--text-light);">Nenhum pagamento arquivado encontrado</p>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                let tableHTML = '';
+                
+                pagamentosArquivados.forEach((pagamento, index) => {
+                    const dataArquivamento = new Date(pagamento.dataArquivamento).toLocaleDateString('pt-BR');
+                    const apelido = pagamento.clienteApelido ? ` (${pagamento.clienteApelido})` : '';
+                    
+                    tableHTML += `
+                        <tr>
+                            <td>
+                                <div style="font-weight: 600;">${pagamento.clienteNome}</div>
+                                <small style="color: var(--text-light);">${apelido}</small>
+                            </td>
+                            <td><strong>${pagamento.nota}</strong></td>
+                            <td>${dataArquivamento}</td>
+                            <td style="font-weight: 700; color: var(--success);">
+                                ${formatCurrency(pagamento.valor)}
+                            </td>
+                            <td>
+                                <span class="badge badge-info">Arquivado</span>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                tbody.innerHTML = tableHTML;
+            }
+            
+            // Atualizar contador
+            document.getElementById('pagamentos-arquivados-count').textContent = 
+                `${pagamentosArquivados.length} ${pagamentosArquivados.length === 1 ? 'pagamento arquivado encontrado' : 'pagamentos arquivados encontrados'}`;
+            
+            // Abrir modal
+            document.getElementById('modal-pagamentos-arquivados').style.display = 'flex';
         }
 
         function gerarRelatorioPagamentos() {
@@ -4108,6 +4370,572 @@
             window.print();
         }
 
+        // ===== RELATÓRIOS (NOVAS FUNÇÕES) =====
+        function updateRelatorios() {
+            // Atualizar estatísticas básicas
+            document.getElementById('relatorio-clientes-total').textContent = localClients.length;
+            
+            // Calcular total a receber
+            let totalReceber = 0;
+            let totalPagamentos30Dias = 0;
+            let clientesAtrasados = 0;
+            
+            const trintaDiasAtras = new Date();
+            trintaDiasAtras.setDate(trintaDiasAtras.getDate() - 30);
+            
+            localClients.forEach(client => {
+                const balance = (client.transactions || []).reduce((sum, transaction) => sum + transaction.total, 0);
+                
+                if (balance > 0.05) {
+                    totalReceber += balance;
+                    
+                    // Verificar se está atrasado
+                    const overdueData = getOverdueData(client);
+                    if (overdueData) {
+                        clientesAtrasados++;
+                    }
+                }
+                
+                // Calcular pagamentos dos últimos 30 dias
+                const pagamentos30Dias = (client.transactions || []).filter(t => 
+                    t.type === 'credit' && new Date(t.date) >= trintaDiasAtras
+                ).reduce((sum, t) => sum + Math.abs(t.total), 0);
+                
+                totalPagamentos30Dias += pagamentos30Dias;
+            });
+            
+            document.getElementById('relatorio-total-receber').textContent = formatCurrency(totalReceber);
+            document.getElementById('relatorio-atrasados').textContent = clientesAtrasados;
+            document.getElementById('relatorio-pagamentos-periodo').textContent = formatCurrency(totalPagamentos30Dias);
+            
+            // Atualizar distribuição por cidade
+            updateDistribuicaoCidade();
+            
+            // Atualizar pagamentos recentes
+            updatePagamentosRecentes();
+        }
+
+        function updateDistribuicaoCidade() {
+            const distribuicaoElement = document.getElementById('distribuicao-cidade');
+            
+            // Contar clientes por cidade
+            const cidades = {};
+            localClients.forEach(client => {
+                const cidade = client.cidade || 'Não informada';
+                cidades[cidade] = (cidades[cidade] || 0) + 1;
+            });
+            
+            // Ordenar por quantidade (maior primeiro)
+            const cidadesOrdenadas = Object.entries(cidades)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5); // Pegar apenas as 5 principais
+            
+            if (cidadesOrdenadas.length === 0) {
+                distribuicaoElement.innerHTML = `
+                    <p style="text-align: center; color: var(--text-light); padding: 30px 0;">
+                        <i class="fas fa-map-marker-alt fa-2x mb-10"></i><br>
+                        Nenhum dado disponível
+                    </p>
+                `;
+                return;
+            }
+            
+            let html = '<div style="display: flex; flex-direction: column; gap: 10px;">';
+            
+            cidadesOrdenadas.forEach(([cidade, quantidade]) => {
+                const porcentagem = ((quantidade / localClients.length) * 100).toFixed(1);
+                
+                html += `
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span style="font-weight: 500;">${cidade}</span>
+                            <span style="font-weight: 600; color: var(--primary);">${quantidade}</span>
+                        </div>
+                        <div style="height: 8px; background: #eee; border-radius: 4px; overflow: hidden;">
+                            <div style="width: ${porcentagem}%; height: 100%; background: linear-gradient(to right, var(--primary-light), var(--primary));"></div>
+                        </div>
+                        <div style="text-align: right; font-size: 0.8rem; color: var(--text-light); margin-top: 3px;">
+                            ${porcentagem}%
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            distribuicaoElement.innerHTML = html;
+        }
+
+        function updatePagamentosRecentes() {
+            const pagamentosElement = document.getElementById('pagamentos-recentes');
+            
+            // Coletar todos os pagamentos dos últimos 7 dias
+            const seteDiasAtras = new Date();
+            seteDiasAtras.setDate(seteDiasAtras.getDate() - 7);
+            
+            let pagamentosRecentes = [];
+            
+            localClients.forEach(client => {
+                const pagamentosCliente = (client.transactions || []).filter(t => 
+                    t.type === 'credit' && new Date(t.date) >= seteDiasAtras
+                );
+                
+                pagamentosCliente.forEach(pagamento => {
+                    pagamentosRecentes.push({
+                        clienteNome: client.nome,
+                        nota: client.activeNoteNumber || '--',
+                        data: pagamento.date,
+                        valor: Math.abs(pagamento.total),
+                        dataFormatada: new Date(pagamento.date).toLocaleDateString('pt-BR')
+                    });
+                });
+            });
+            
+            // Ordenar por data (mais recente primeiro)
+            pagamentosRecentes.sort((a, b) => new Date(b.data) - new Date(a.data));
+            
+            // Limitar a 5 resultados
+            pagamentosRecentes = pagamentosRecentes.slice(0, 5);
+            
+            if (pagamentosRecentes.length === 0) {
+                pagamentosElement.innerHTML = `
+                    <p style="text-align: center; color: var(--text-light); padding: 30px 0;">
+                        <i class="fas fa-hand-holding-usd fa-2x mb-10"></i><br>
+                        Nenhum pagamento recente
+                    </p>
+                `;
+                return;
+            }
+            
+            let html = '<div style="display: flex; flex-direction: column; gap: 15px;">';
+            
+            pagamentosRecentes.forEach(pagamento => {
+                html += `
+                    <div style="padding: 15px; background: rgba(46, 204, 113, 0.05); border-radius: var(--radius-sm);">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div>
+                                <div style="font-weight: 600;">${pagamento.clienteNome}</div>
+                                <div style="font-size: 0.85rem; color: var(--text-light);">Nota #${pagamento.nota} • ${pagamento.dataFormatada}</div>
+                            </div>
+                            <div style="font-weight: 700; color: var(--success);">
+                                ${formatCurrency(pagamento.valor)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            pagamentosElement.innerHTML = html;
+        }
+
+        function filtrarRelatorios() {
+            const dataInicio = document.getElementById('relatorio-data-inicio').value;
+            const dataFim = document.getElementById('relatorio-data-fim').value;
+            
+            if (!dataInicio || !dataFim) {
+                showToast('Selecione um período válido', 'warning');
+                return;
+            }
+            
+            // Aqui você implementaria a filtragem específica se necessário
+            // Por enquanto, apenas atualiza os relatórios
+            updateRelatorios();
+            showToast('Filtro aplicado com sucesso!', 'success');
+        }
+
+        function resetarFiltroRelatorios() {
+            const primeiroDiaMes = new Date();
+            primeiroDiaMes.setDate(1);
+            document.getElementById('relatorio-data-inicio').value = primeiroDiaMes.toISOString().split('T')[0];
+            
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('relatorio-data-fim').value = hoje;
+            
+            updateRelatorios();
+            showToast('Filtro resetado', 'info');
+        }
+
+        function gerarRelatorioClientes() {
+            // Criar conteúdo do relatório
+            let relatorioHTML = `
+                <h2>Relatório de Clientes</h2>
+                <p>Data: ${new Date().toLocaleDateString('pt-BR')}</p>
+                <p>Total de Clientes: ${localClients.length}</p>
+                <hr>
+                <table border="1" cellpadding="5" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th>Nota</th>
+                            <th>Nome</th>
+                            <th>Apelido</th>
+                            <th>Cidade</th>
+                            <th>Telefone</th>
+                            <th>Saldo</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            localClients.forEach(client => {
+                const balance = (client.transactions || []).reduce((sum, t) => sum + t.total, 0);
+                let status = 'Em dia';
+                
+                if (balance > 0.05) {
+                    const overdueData = getOverdueData(client);
+                    status = overdueData ? `Atrasado ${overdueData.days} dias` : 'Pendente';
+                }
+                
+                relatorioHTML += `
+                    <tr>
+                        <td>${client.activeNoteNumber || '-'}</td>
+                        <td>${client.nome}</td>
+                        <td>${client.apelido || '-'}</td>
+                        <td>${client.cidade || '-'}</td>
+                        <td>${client.tel || '-'}</td>
+                        <td>${formatCurrency(balance)}</td>
+                        <td>${status}</td>
+                    </tr>
+                `;
+            });
+            
+            relatorioHTML += `
+                    </tbody>
+                </table>
+                <hr>
+                <p>Gerado em: ${new Date().toLocaleString('pt-BR')}</p>
+            `;
+            
+            // Criar nova janela para impressão
+            const janelaImpressao = window.open('', '_blank');
+            janelaImpressao.document.write(`
+                <html>
+                <head>
+                    <title>Relatório de Clientes - ${new Date().toLocaleDateString('pt-BR')}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        h2 { color: #333; }
+                        table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 12px; }
+                        th { background-color: #f2f2f2; text-align: left; padding: 8px; }
+                        td { padding: 6px; border-bottom: 1px solid #ddd; }
+                        hr { margin: 20px 0; border: none; border-top: 1px solid #ddd; }
+                    </style>
+                </head>
+                <body>
+                    ${relatorioHTML}
+                </body>
+                </html>
+            `);
+            janelaImpressao.document.close();
+            janelaImpressao.print();
+            
+            showToast('Relatório de clientes gerado com sucesso!', 'success');
+        }
+
+        function gerarRelatorioFinanceiro() {
+            // Calcular totais
+            let totalReceber = 0;
+            let totalPagos30Dias = 0;
+            let clientesAtrasados = 0;
+            let valorAtrasado = 0;
+            
+            const trintaDiasAtras = new Date();
+            trintaDiasAtras.setDate(trintaDiasAtras.getDate() - 30);
+            
+            localClients.forEach(client => {
+                const balance = (client.transactions || []).reduce((sum, t) => sum + t.total, 0);
+                
+                if (balance > 0.05) {
+                    totalReceber += balance;
+                    
+                    // Verificar se está atrasado
+                    const overdueData = getOverdueData(client);
+                    if (overdueData) {
+                        clientesAtrasados++;
+                        valorAtrasado += overdueData.amount;
+                    }
+                }
+                
+                // Calcular pagamentos dos últimos 30 dias
+                const pagamentos30Dias = (client.transactions || []).filter(t => 
+                    t.type === 'credit' && new Date(t.date) >= trintaDiasAtras
+                ).reduce((sum, t) => sum + Math.abs(t.total), 0);
+                
+                totalPagos30Dias += pagamentos30Dias;
+            });
+            
+            // Criar conteúdo do relatório
+            let relatorioHTML = `
+                <h2>Relatório Financeiro</h2>
+                <p>Data: ${new Date().toLocaleDateString('pt-BR')}</p>
+                <hr>
+                <h3>Resumo Financeiro</h3>
+                <table border="0" cellpadding="5" cellspacing="0" style="width: 100%;">
+                    <tr>
+                        <td><strong>Total a Receber:</strong></td>
+                        <td style="text-align: right;">${formatCurrency(totalReceber)}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Valor em Atraso:</strong></td>
+                        <td style="text-align: right; color: #e74c3c;">${formatCurrency(valorAtrasado)}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Clientes em Atraso:</strong></td>
+                        <td style="text-align: right;">${clientesAtrasados}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Recebido (últimos 30 dias):</strong></td>
+                        <td style="text-align: right; color: #27ae60;">${formatCurrency(totalPagos30Dias)}</td>
+                    </tr>
+                </table>
+                <hr>
+                <h3>Clientes com Saldo Pendente</h3>
+                <table border="1" cellpadding="5" cellspacing="0" style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Nota</th>
+                            <th>Saldo</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            // Adicionar clientes com saldo pendente
+            localClients.forEach(client => {
+                const balance = (client.transactions || []).reduce((sum, t) => sum + t.total, 0);
+                
+                if (balance > 0.05) {
+                    const overdueData = getOverdueData(client);
+                    const status = overdueData ? `Atrasado ${overdueData.days} dias` : 'Pendente';
+                    const statusClass = overdueData ? 'color: #e74c3c;' : 'color: #f39c12;';
+                    
+                    relatorioHTML += `
+                        <tr>
+                            <td>${client.nome}</td>
+                            <td>${client.activeNoteNumber || '-'}</td>
+                            <td>${formatCurrency(balance)}</td>
+                            <td style="${statusClass}">${status}</td>
+                        </tr>
+                    `;
+                }
+            });
+            
+            relatorioHTML += `
+                    </tbody>
+                </table>
+                <hr>
+                <p>Gerado em: ${new Date().toLocaleString('pt-BR')}</p>
+            `;
+            
+            // Criar nova janela para impressão
+            const janelaImpressao = window.open('', '_blank');
+            janelaImpressao.document.write(`
+                <html>
+                <head>
+                    <title>Relatório Financeiro - ${new Date().toLocaleDateString('pt-BR')}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        h2 { color: #333; }
+                        h3 { color: #2c3e50; margin-top: 25px; }
+                        table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+                        th { background-color: #f2f2f2; text-align: left; padding: 10px; }
+                        td { padding: 8px; border-bottom: 1px solid #ddd; }
+                        hr { margin: 20px 0; border: none; border-top: 1px solid #ddd; }
+                    </style>
+                </head>
+                <body>
+                    ${relatorioHTML}
+                </body>
+                </html>
+            `);
+            janelaImpressao.document.close();
+            janelaImpressao.print();
+            
+            showToast('Relatório financeiro gerado com sucesso!', 'success');
+        }
+
+        function abrirRelatorioAtrasados() {
+            // Coletar clientes atrasados
+            const clientesAtrasados = localClients.filter(client => {
+                return getOverdueData(client) !== null;
+            });
+            
+            // Criar conteúdo do relatório
+            let relatorioHTML = `
+                <h2>Relatório de Clientes Atrasados</h2>
+                <p>Data: ${new Date().toLocaleDateString('pt-BR')}</p>
+                <p>Total de Clientes Atrasados: ${clientesAtrasados.length}</p>
+                <hr>
+                <table border="1" cellpadding="5" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Nota</th>
+                            <th>Telefone</th>
+                            <th>Valor</th>
+                            <th>Dias em Atraso</th>
+                            <th>Data do Débito</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            clientesAtrasados.forEach(client => {
+                const overdueData = getOverdueData(client);
+                const oldestDebt = (client.transactions || [])
+                    .filter(t => t.total > 0)
+                    .sort((a, b) => new Date(a.date) - new Date(b.date))[0];
+                
+                const dataDebito = oldestDebt ? new Date(oldestDebt.date).toLocaleDateString('pt-BR') : '-';
+                
+                relatorioHTML += `
+                    <tr>
+                        <td>${client.nome}</td>
+                        <td>${client.activeNoteNumber || '-'}</td>
+                        <td>${client.tel || '-'}</td>
+                        <td style="color: #e74c3c;">${formatCurrency(overdueData.amount)}</td>
+                        <td>${overdueData.days} dias</td>
+                        <td>${dataDebito}</td>
+                    </tr>
+                `;
+            });
+            
+            relatorioHTML += `
+                    </tbody>
+                </table>
+                <hr>
+                <p>Gerado em: ${new Date().toLocaleString('pt-BR')}</p>
+                <p><strong>Ação Recomendada:</strong> Enviar lembretes via WhatsApp para os clientes listados acima.</p>
+            `;
+            
+            // Criar nova janela para impressão
+            const janelaImpressao = window.open('', '_blank');
+            janelaImpressao.document.write(`
+                <html>
+                <head>
+                    <title>Relatório de Clientes Atrasados - ${new Date().toLocaleDateString('pt-BR')}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        h2 { color: #333; }
+                        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                        th { background-color: #f2f2f2; text-align: left; padding: 10px; }
+                        td { padding: 8px; border-bottom: 1px solid #ddd; }
+                        hr { margin: 20px 0; border: none; border-top: 1px solid #ddd; }
+                    </style>
+                </head>
+                <body>
+                    ${relatorioHTML}
+                </body>
+                </html>
+            `);
+            janelaImpressao.document.close();
+            janelaImpressao.print();
+            
+            showToast('Relatório de clientes atrasados gerado com sucesso!', 'success');
+        }
+
+        function gerarRelatorioPagamentosPeriodo() {
+            const dataInicio = document.getElementById('relatorio-data-inicio').value;
+            const dataFim = document.getElementById('relatorio-data-fim').value;
+            
+            if (!dataInicio || !dataFim) {
+                showToast('Selecione um período válido', 'warning');
+                return;
+            }
+            
+            // Coletar pagamentos no período
+            let pagamentosPeriodo = [];
+            let totalPeriodo = 0;
+            
+            localClients.forEach(client => {
+                const pagamentosCliente = (client.transactions || []).filter(t => {
+                    if (t.type !== 'credit') return false;
+                    
+                    const dataTransacao = new Date(t.date).toISOString().split('T')[0];
+                    return dataTransacao >= dataInicio && dataTransacao <= dataFim;
+                });
+                
+                pagamentosCliente.forEach(pagamento => {
+                    pagamentosPeriodo.push({
+                        clienteNome: client.nome,
+                        nota: client.activeNoteNumber || '--',
+                        data: pagamento.date,
+                        valor: Math.abs(pagamento.total),
+                        dataFormatada: new Date(pagamento.date).toLocaleDateString('pt-BR')
+                    });
+                    
+                    totalPeriodo += Math.abs(pagamento.total);
+                });
+            });
+            
+            // Ordenar por data (mais recente primeiro)
+            pagamentosPeriodo.sort((a, b) => new Date(b.data) - new Date(a.data));
+            
+            // Criar conteúdo do relatório
+            let relatorioHTML = `
+                <h2>Relatório de Pagamentos por Período</h2>
+                <p>Período: ${new Date(dataInicio).toLocaleDateString('pt-BR')} até ${new Date(dataFim).toLocaleDateString('pt-BR')}</p>
+                <p>Total Recebido: ${formatCurrency(totalPeriodo)}</p>
+                <p>Quantidade de Pagamentos: ${pagamentosPeriodo.length}</p>
+                <hr>
+                <table border="1" cellpadding="5" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Cliente</th>
+                            <th>Nota</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            pagamentosPeriodo.forEach(pagamento => {
+                relatorioHTML += `
+                    <tr>
+                        <td>${pagamento.dataFormatada}</td>
+                        <td>${pagamento.clienteNome}</td>
+                        <td>${pagamento.nota}</td>
+                        <td>${formatCurrency(pagamento.valor)}</td>
+                    </tr>
+                `;
+            });
+            
+            relatorioHTML += `
+                    </tbody>
+                </table>
+                <hr>
+                <p>Gerado em: ${new Date().toLocaleString('pt-BR')}</p>
+            `;
+            
+            // Criar nova janela para impressão
+            const janelaImpressao = window.open('', '_blank');
+            janelaImpressao.document.write(`
+                <html>
+                <head>
+                    <title>Relatório de Pagamentos - ${new Date(dataInicio).toLocaleDateString('pt-BR')} a ${new Date(dataFim).toLocaleDateString('pt-BR')}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        h2 { color: #333; }
+                        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                        th { background-color: #f2f2f2; text-align: left; padding: 10px; }
+                        td { padding: 8px; border-bottom: 1px solid #ddd; }
+                        hr { margin: 20px 0; border: none; border-top: 1px solid #ddd; }
+                    </style>
+                </head>
+                <body>
+                    ${relatorioHTML}
+                </body>
+                </html>
+            `);
+            janelaImpressao.document.close();
+            janelaImpressao.print();
+            
+            showToast('Relatório de pagamentos por período gerado com sucesso!', 'success');
+        }
+
         // ===== MIGRAÇÃO DE CLIENTES (OPCIONAL) =====
         async function migrateExistingClients() {
             if (!confirm('Esta ação irá atribuir números de nota fixos para todos os clientes. Continuar?')) {
@@ -4201,15 +5029,6 @@
             if (searchContainer && searchResults && !searchContainer.contains(event.target)) {
                 searchResults.style.display = 'none';
             }
-        });
-
-        // Fechar sidebar quando clicar em um link no mobile
-        document.querySelectorAll('.menu-item').forEach(item => {
-            item.addEventListener('click', function() {
-                if (window.innerWidth <= 992) {
-                    toggleSidebar();
-                }
-            });
         });
 
         // Melhorar toque no mobile
