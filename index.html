@@ -863,7 +863,7 @@
 
         .detalhe-main {
             display: flex;
-            flex-direction: column;
+            flex-direction:column;
             gap: 25px;
         }
 
@@ -2087,7 +2087,7 @@
                         <div class="card-header">
                             <h3 class="card-title"><i class="fas fa-info-circle"></i> Informações do Cliente</h3>
                         </div>
-                        <div class="client-meta">
+                        <div class="client-meta" id="client-meta">
                             <div class="client-meta-item">
                                 <i class="fas fa-id-card"></i>
                                 <span id="info-cpf">CPF: -</span>
@@ -2104,6 +2104,8 @@
                                 <i class="fas fa-home"></i>
                                 <span id="info-end">Endereço: -</span>
                             </div>
+                            <!-- Área para informações de vencimento será inserida aqui -->
+                            <div id="info-vencimento"></div>
                         </div>
                     </div>
                 </div>
@@ -2785,12 +2787,14 @@
                 })
                 .map(item => item.client);
             
+            const filteredClients = searchResults;
+            
             // Mostrar resultados
-            if (searchResults.length > 0) {
+            if (filteredClients.length > 0) {
                 let resultsHTML = '';
                 
                 // Limitar a 10 resultados
-                searchResults.slice(0, 10).forEach(client => {
+                filteredClients.slice(0, 10).forEach(client => {
                     const balance = (client.transactions || []).reduce((sum, transaction) => sum + transaction.total, 0);
                     const noteNumber = client.activeNoteNumber ? `#${client.activeNoteNumber}` : 'Sem nota';
                     const nickname = client.apelido ? ` (${client.apelido})` : '';
@@ -2815,10 +2819,10 @@
                     `;
                 });
                 
-                if (searchResults.length > 10) {
+                if (filteredClients.length > 10) {
                     resultsHTML += `
                         <div class="search-result-item" style="text-align: center; color: var(--text-light); font-style: italic;">
-                            +${searchResults.length - 10} mais resultados...
+                            +${filteredClients.length - 10} mais resultados...
                         </div>
                     `;
                 }
@@ -3676,6 +3680,58 @@
             }
         }
 
+        // ===== MODIFICAÇÃO NO CÁLCULO DE VENCIMENTO =====
+        function getOverdueData(client) {
+            const transactions = client.transactions || [];
+            const balance = transactions.reduce((sum, t) => sum + t.total, 0);
+            
+            // Se não tem débito, não está atrasado
+            if (balance <= 0.05) {
+                return null;
+            }
+            
+            // Encontrar a data de vencimento mais recente (considerando prorrogações)
+            let dataVencimento = null;
+            
+            // Primeiro, encontrar a transação de débito mais antiga
+            const debtTransactions = transactions.filter(t => t.type === 'debit' || (t.total > 0 && t.type !== 'prorrogacao'));
+            
+            if (debtTransactions.length === 0) return null;
+            
+            // Ordenar por data (mais antiga primeiro)
+            debtTransactions.sort((a, b) => new Date(a.date) - new Date(b.date));
+            const oldestDebtDate = new Date(debtTransactions[0].date);
+            
+            // Data base de vencimento: data do débito mais antigo + dias padrão
+            dataVencimento = new Date(oldestDebtDate);
+            dataVencimento.setDate(dataVencimento.getDate() + systemConfig.diasVencimento);
+            
+            // Agora, aplicar todas as prorrogações registradas
+            const prorrogacoes = transactions.filter(t => t.type === 'prorrogacao' && t.dataProrrogacao);
+            
+            prorrogacoes.forEach(prorrogacao => {
+                const dataProrrogacao = new Date(prorrogacao.dataProrrogacao);
+                // Se a prorrogação for mais recente que o vencimento atual, usar ela
+                if (dataProrrogacao > dataVencimento) {
+                    dataVencimento = dataProrrogacao;
+                }
+            });
+            
+            // Verificar se está vencido
+            const today = new Date();
+            if (today > dataVencimento) {
+                const daysOverdue = Math.ceil((today - dataVencimento) / (1000 * 60 * 60 * 24));
+                return {
+                    days: daysOverdue,
+                    amount: balance,
+                    dueDate: dataVencimento,
+                    dataBase: oldestDebtDate
+                };
+            }
+            
+            return null;
+        }
+
         function updateDetailView() {
             if (!currentClient) return;
             
@@ -3722,6 +3778,9 @@
                 const sortedTransactions = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
                 
                 sortedTransactions.forEach(transaction => {
+                    // Não mostrar transações de prorrogação no extrato
+                    if (transaction.type === 'prorrogacao') return;
+                    
                     totalBalance += transaction.total;
                     
                     const isPayment = transaction.type === 'credit';
@@ -3775,6 +3834,56 @@
             } else {
                 conditionalButtons.classList.remove('show');
             }
+            
+            // Calcular e exibir data de vencimento
+            const overdueData = getOverdueData(currentClient);
+            let vencimentoHTML = '';
+            
+            if (overdueData) {
+                vencimentoHTML = `
+                    <div class="client-meta-item">
+                        <i class="fas fa-calendar-times" style="color: var(--danger);"></i>
+                        <span style="color: var(--danger);">
+                            Vencimento: ${overdueData.dueDate.toLocaleDateString('pt-BR')} (Atrasado ${overdueData.days} dias)
+                        </span>
+                    </div>
+                `;
+            } else {
+                // Calcular próximo vencimento mesmo se não estiver atrasado
+                const debtTransactions = transactions.filter(t => t.type === 'debit' || (t.total > 0 && t.type !== 'prorrogacao'));
+                
+                if (debtTransactions.length > 0) {
+                    debtTransactions.sort((a, b) => new Date(a.date) - new Date(b.date));
+                    const oldestDebtDate = new Date(debtTransactions[0].date);
+                    let dataVencimento = new Date(oldestDebtDate);
+                    dataVencimento.setDate(dataVencimento.getDate() + systemConfig.diasVencimento);
+                    
+                    // Aplicar prorrogações
+                    const prorrogacoes = transactions.filter(t => t.type === 'prorrogacao' && t.dataProrrogacao);
+                    prorrogacoes.forEach(prorrogacao => {
+                        const dataProrrogacao = new Date(prorrogacao.dataProrrogacao);
+                        if (dataProrrogacao > dataVencimento) {
+                            dataVencimento = dataProrrogacao;
+                        }
+                    });
+                    
+                    const hoje = new Date();
+                    const diasRestantes = Math.ceil((dataVencimento - hoje) / (1000 * 60 * 60 * 24));
+                    
+                    vencimentoHTML = `
+                        <div class="client-meta-item">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>
+                                Próximo vencimento: ${dataVencimento.toLocaleDateString('pt-BR')} 
+                                (${diasRestantes > 0 ? `${diasRestantes} dias` : 'Vence hoje'})
+                            </span>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Atualizar informações de vencimento
+            document.getElementById('info-vencimento').innerHTML = vencimentoHTML;
             
             // Limpar campos de entrada
             document.getElementById('add-desc').value = '';
@@ -3838,7 +3947,7 @@
                 unit: val,
                 discount: descVal,
                 total: total,
-                type: 'debt'
+                type: 'debit'
             };
             
             // Atualizar transações do cliente
@@ -3891,6 +4000,7 @@
             }
         }
 
+        // ===== MODIFICAÇÃO NO FUNCIONAMENTO DO PAGAMENTO =====
         function addPayment() {
             if (!currentClient) {
                 showToast('Selecione um cliente primeiro', 'warning');
@@ -3917,14 +4027,33 @@
                 type: 'credit'
             };
             
+            // Calcular novo vencimento: 30 dias a partir de hoje
+            const novoVencimento = new Date();
+            novoVencimento.setDate(novoVencimento.getDate() + 30);
+            
+            // Adicionar transação de prorrogação de vencimento (não aparece nas notificações)
+            const prorrogacaoTransaction = {
+                id: Date.now() + 1, // ID diferente do pagamento
+                date: new Date().toISOString(),
+                desc: "PRORROGAÇÃO DE VENCIMENTO",
+                qtd: 1,
+                unit: 0,
+                discount: 0,
+                total: 0,
+                type: 'prorrogacao',
+                dataProrrogacao: novoVencimento.toISOString(),
+                hidden: true // Marcar como oculto para não aparecer em notificações
+            };
+            
             // Atualizar transações do cliente
             const transactions = currentClient.transactions || [];
             transactions.push(transaction);
+            transactions.push(prorrogacaoTransaction); // Adiciona a prorrogação
             
             // Salvar no Firestore
             db.collection("clients").doc(currentClient.id).update({ transactions: transactions })
                 .then(() => {
-                    showToast('Pagamento registrado com sucesso!', 'success');
+                    showToast('Pagamento registrado e vencimento prorrogado em 30 dias!', 'success');
                     document.getElementById('pay-val').value = '';
                     setTimeout(() => {
                         document.getElementById('pay-val').focus();
@@ -3936,12 +4065,23 @@
                 });
         }
 
+        // ===== MODIFICAÇÃO NA EXCLUSÃO DE TRANSAÇÕES =====
         function deleteTransaction(transactionId) {
             if (!confirm('Tem certeza que deseja excluir esta transação?')) {
                 return;
             }
             
             if (!currentClient) return;
+            
+            // Encontrar a transação
+            const transaction = currentClient.transactions.find(t => t.id === transactionId);
+            
+            // Se for uma prorrogação, mostrar aviso especial
+            if (transaction && transaction.type === 'prorrogacao') {
+                if (!confirm('Esta é uma transação de prorrogação de vencimento. Ao excluí-la, o prazo de vencimento será recalculado. Continuar?')) {
+                    return;
+                }
+            }
             
             const transactions = currentClient.transactions.filter(t => t.id !== transactionId);
             
@@ -3974,46 +4114,15 @@
         }
 
         // ===== NOTIFICAÇÕES E VENCIMENTOS =====
-        function getOverdueData(client) {
-            const balance = (client.transactions || []).reduce((sum, t) => sum + t.total, 0);
-            
-            // Se não tem débito, não está atrasado
-            if (balance <= 0.05 || !client.transactions || client.transactions.length === 0) {
-                return null;
-            }
-            
-            // Encontrar a transação mais antiga de débito
-            const debtTransactions = client.transactions.filter(t => t.total > 0);
-            if (debtTransactions.length === 0) return null;
-            
-            // Ordenar por data (mais antiga primeiro)
-            debtTransactions.sort((a, b) => new Date(a.date) - new Date(b.date));
-            const oldestDebtDate = new Date(debtTransactions[0].date);
-            
-            // Calcular data de vencimento
-            const dueDate = new Date(oldestDebtDate);
-            dueDate.setDate(dueDate.getDate() + systemConfig.diasVencimento);
-            
-            // Verificar se está vencido
-            const today = new Date();
-            if (today > dueDate) {
-                const daysOverdue = Math.ceil((today - dueDate) / (1000 * 60 * 60 * 24));
-                return {
-                    days: daysOverdue,
-                    amount: balance,
-                    dueDate: dueDate
-                };
-            }
-            
-            return null;
-        }
-
+        // MODIFICAÇÃO NA RENDERIZAÇÃO DE NOTIFICAÇÕES
         function renderNotifications() {
             const notificationList = document.getElementById('notification-list');
             
-            // Encontrar clientes atrasados
+            // Encontrar clientes atrasados (ignorando transações de prorrogação)
             const overdueClients = localClients.filter(client => {
-                return getOverdueData(client) !== null;
+                const overdueData = getOverdueData(client);
+                // Não incluir se o único motivo for prorrogação
+                return overdueData !== null;
             });
             
             if (overdueClients.length === 0) {
@@ -4041,7 +4150,7 @@
                     `Olá ${client.nome}! Aqui é da AgroVida.\n\n` +
                     `Esta é uma mensagem automática do nosso sistema, enviada apenas como lembrete cordial de uma notinha pendente ` +
                     `(Nota #${noteNumber}) no valor de ${formatCurrency(overdueData.amount)}.\n\n` +
-                    `Não é cobrança. Qualquer dúvida, conte conosco! 🌱`
+                    `Não é cobrança. Qualquer dúvida, conta conosco! 🌱`
                 );
                 
                 // Botão do WhatsApp (se tiver telefone)
@@ -4334,12 +4443,16 @@
                         </center>
                         <hr>
                         <table style="width: 100%; margin: 15px 0;">
-                            ${transactions.map(t => `
-                                <tr>
-                                    <td>${t.qtd}x ${t.desc}</td>
-                                    <td style="text-align: right;">${formatCurrency(t.total)}</td>
-                                </tr>
-                            `).join('')}
+                            ${transactions.map(t => {
+                                // Não mostrar prorrogações no extrato impresso
+                                if (t.type === 'prorrogacao') return '';
+                                return `
+                                    <tr>
+                                        <td>${t.qtd}x ${t.desc}</td>
+                                        <td style="text-align: right;">${formatCurrency(t.total)}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
                         </table>
                         <hr>
                         <h3 style="text-align: right;">SALDO: ${formatCurrency(balance)}</h3>
@@ -4361,12 +4474,16 @@
                         </center>
                         <hr>
                         <table style="width: 100%; margin: 15px 0;">
-                            ${transactions.map(t => `
-                                <tr>
-                                    <td>${t.qtd}x ${t.desc}</td>
-                                    <td style="text-align: right;">${formatCurrency(t.total)}</td>
-                                </tr>
-                            `).join('')}
+                            ${transactions.map(t => {
+                                // Não mostrar prorrogações no extrato impresso
+                                if (t.type === 'prorrogacao') return '';
+                                return `
+                                    <tr>
+                                        <td>${t.qtd}x ${t.desc}</td>
+                                        <td style="text-align: right;">${formatCurrency(t.total)}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
                         </table>
                         <hr>
                         <h3 style="text-align: right;">SALDO: ${formatCurrency(balance)}</h3>
@@ -4805,7 +4922,7 @@
             clientesAtrasados.forEach(client => {
                 const overdueData = getOverdueData(client);
                 const oldestDebt = (client.transactions || [])
-                    .filter(t => t.total > 0)
+                    .filter(t => t.type === 'debit' || (t.total > 0 && t.type !== 'prorrogacao'))
                     .sort((a, b) => new Date(a.date) - new Date(b.date))[0];
                 
                 const dataDebito = oldestDebt ? new Date(oldestDebt.date).toLocaleDateString('pt-BR') : '-';
